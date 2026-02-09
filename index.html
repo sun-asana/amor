@@ -3,223 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amor Tic-Tac-Toe</title>
+    <title>Amor Engine Pro</title>
     <style>
         :root {
             --primary: #ff4d6d;
-            --secondary: #ffb3c1;
-            --bg: #fff0f5;
+            --neon-shadow: 0 0 10px #ff4d6d, 0 0 20px #ff4d6d;
         }
 
         body {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: var(--bg);
-            font-family: 'Segoe UI', sans-serif;
-            overflow: hidden;
-            cursor: none; /* Скрываем стандартный курсор */
+            margin: 0; height: 100vh; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            font-family: 'Segoe UI', sans-serif; overflow: hidden; cursor: none;
+            transition: background 0.5s;
         }
 
-        /* Шапка игры */
-        #status {
-            font-size: 28px;
-            color: var(--primary);
-            margin-bottom: 20px;
-            font-weight: bold;
-            text-align: center;
-            z-index: 10;
-        }
-
-        /* Сетка */
-        .board {
-            display: grid;
-            grid-template-columns: repeat(3, 110px);
-            grid-template-rows: repeat(3, 110px);
-            gap: 15px;
-            z-index: 10;
-        }
+        /* СТИЛИ СЕТОК */
+        .board { display: grid; grid-template-columns: repeat(3, 110px); gap: 15px; z-index: 10; }
+        
+        /* Сетка: Пунктир */
+        .grid-dots .cell { border: 3px dashed var(--primary); background: rgba(255,255,255,0.5); }
+        
+        /* Сетка: Сердечки */
+        .grid-hearts .cell { border: 10px solid transparent; border-image: url('https://cdn-icons-png.flaticon.com/512/833/833472.png') 30 round; }
+        
+        /* Сетка: Неон */
+        .grid-neon .cell { border: 2px solid #fff; box-shadow: var(--neon-shadow); background: rgba(0,0,0,0.2); color: #fff; }
 
         .cell {
-            background: white;
-            border: 4px solid var(--secondary);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 50px;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 110px; height: 110px; border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 50px; transition: all 0.3s ease; background: white;
         }
 
-        .cell:hover {
-            transform: scale(1.05);
-            border-color: var(--primary);
-        }
-
-        /* Модальное окно вопроса */
-        #modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 30px;
-            border-radius: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-            z-index: 100;
-            width: 80%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        #modal h2 { color: var(--primary); margin-top: 0; }
-        #modal input {
-            width: 90%;
-            padding: 10px;
-            margin: 15px 0;
-            border: 2px solid var(--secondary);
-            border-radius: 10px;
-            outline: none;
-        }
-
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        /* Элементы декора */
+        /* МАГИЧЕСКИЙ КУРСОР И ПЫЛЬЦА */
         #custom-cursor {
-            position: fixed;
-            width: 50px;
-            height: 50px;
-            pointer-events: none;
-            z-index: 9999;
-            transform: translate(-50%, -50%);
+            position: fixed; width: 60px; pointer-events: none; z-index: 9999;
+            transform: translate(-50%, -50%); filter: drop-shadow(0 0 5px gold);
         }
 
         .particle {
-            position: fixed;
-            pointer-events: none;
-            z-index: 9998;
-            animation: moveUp 1s forwards;
+            position: fixed; pointer-events: none; z-index: 9998;
+            font-size: 10px; animation: magic 1.5s forwards;
+            text-shadow: 0 0 5px white, 0 0 10px var(--primary);
         }
 
-        @keyframes moveUp {
-            to { transform: translateY(-50px) scale(0); opacity: 0; }
+        @keyframes magic {
+            0% { transform: translate(0,0) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translate(var(--dx), var(--dy)) scale(0) rotate(360deg); opacity: 0; }
         }
+
+        /* ОКНО ВОПРОСА */
+        #modal {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: white; padding: 30px; border-radius: 30px; z-index: 100;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3); text-align: center; width: 300px;
+        }
+
+        .btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
-<body>
+<body id="main-body">
 
-    <div id="status">Загрузка любви...</div>
-    <div class="board" id="board"></div>
+    <div id="status" style="font-size: 24px; color: var(--primary); margin-bottom: 20px; font-weight: bold; z-index: 10;"></div>
+    <div id="board" class="board"></div>
 
     <div id="modal">
-        <h2 id="modal-team">Вопрос</h2>
-        <p id="question-text">Загрузка вопроса...</p>
-        <input type="text" id="answer-input" placeholder="Ваш ответ...">
-        <br>
-        <button class="btn" onclick="checkAnswer()">Ответить</button>
+        <h3 id="modal-team"></h3>
+        <p id="q-text"></p>
+        <input type="text" id="ans-input" style="width: 80%; padding: 8px; margin-bottom: 10px; border: 2px solid #ffb3c1; border-radius: 10px;">
+        <button class="btn" onclick="check()">Ответить</button>
     </div>
 
     <img id="custom-cursor" src="https://cdn-icons-png.flaticon.com/512/3588/3588640.png">
 
     <script>
-        const params = new URLSearchParams(window.location.search);
+        const p = new URLSearchParams(window.location.search);
         
-        // Настройки из URL
-        const t1Name = params.get('t1') || "Команда Сердечек";
-        const t2Name = params.get('t2') || "Команда Конвертов";
-        const t1Sym = params.get('s1') || "❤️";
-        const t2Sym = params.get('s2') || "✉️";
-        
-        // Вопросы (в реальности они придут из редактора)
-        // Пример: q1=Вопрос|Ответ&q2=Вопрос2|Ответ2
-        let questions = [];
-        for(let i=1; i<=9; i++) {
-            let data = params.get('q'+i) || `Вопрос №${i}|ответ`;
-            questions.push({ q: data.split('|')[0], a: data.split('|')[1] });
-        }
+        // 1. Настройка фона
+        const bgs = {
+            'romance': 'linear-gradient(135deg, #fff0f5, #ffdee9)',
+            'science': 'url("https://www.toptal.com/designers/subtlepatterns/uploads/micro-carbon.png") #f8f9fa',
+            'modern': '#ff4d6d'
+        };
+        document.getElementById('main-body').style.background = bgs[p.get('bg')] || bgs['romance'];
 
-        let currentPlayer = 1;
-        let selectedCell = null;
-        const statusDisplay = document.getElementById('status');
-        statusDisplay.innerText = `Ход: ${t1Name}`;
-
-        // Создание поля
+        // 2. Настройка сетки
         const board = document.getElementById('board');
-        for (let i = 0; i < 9; i++) {
-            const cell = document.createElement('div');
-            cell.className = 'cell';
-            cell.onclick = () => openQuestion(i, cell);
-            board.appendChild(cell);
-        }
+        board.classList.add('grid-' + (p.get('grid') || 'dots'));
 
-        // Логика курсора и шлейфа
+        // 3. Настройка команд и символов
+        const t1 = { name: p.get('t1') || "Команда 1", sym: p.get('s1') || "❤️" };
+        const t2 = { name: p.get('t2') || "Команда 2", sym: p.get('s2') || "✉️" };
+        let cur = 1;
+
+        // 4. Частицы (Пыльца)
         document.addEventListener('mousemove', (e) => {
-            const cur = document.getElementById('custom-cursor');
-            cur.style.left = e.clientX + 'px';
-            cur.style.top = e.clientY + 'px';
+            const c = document.getElementById('custom-cursor');
+            c.style.left = e.clientX + 'px'; c.style.top = e.clientY + 'px';
             
-            if (Math.random() > 0.8) {
-                const p = document.createElement('div');
-                p.className = 'particle';
-                p.innerText = '✨';
-                p.style.left = e.clientX + 'px';
-                p.style.top = e.clientY + 'px';
-                document.body.appendChild(p);
-                setTimeout(() => p.remove(), 1000);
+            if(Math.random() > 0.7) {
+                const part = document.createElement('div');
+                part.className = 'particle';
+                // Вперемешку сердечки и искры
+                const types = ['❤️', '✨', '🌸', '▫️'];
+                part.innerText = types[Math.floor(Math.random()*types.length)];
+                part.style.left = e.clientX + 'px';
+                part.style.top = e.clientY + 'px';
+                // Случайное направление разлета
+                part.style.setProperty('--dx', (Math.random()*100 - 50) + 'px');
+                part.style.setProperty('--dy', (Math.random()*100 - 50) + 'px');
+                document.body.appendChild(part);
+                setTimeout(() => part.remove(), 1500);
             }
         });
 
-        function openQuestion(index, cell) {
-            if (cell.innerText !== "") return;
-            selectedCell = cell;
-            document.getElementById('modal').style.display = 'block';
-            document.getElementById('modal-team').innerText = currentPlayer === 1 ? t1Name : t2Name;
-            document.getElementById('question-text').innerText = questions[index].q;
-            document.getElementById('answer-input').value = "";
+        // 5. Логика игры (упрощенно для примера)
+        const status = document.getElementById('status');
+        status.innerText = "Ход: " + t1.name;
+
+        for(let i=0; i<9; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.onclick = () => {
+                if(cell.innerText !== "") return;
+                document.getElementById('modal').style.display = 'block';
+                document.getElementById('q-text').innerText = p.get('q'+(i+1)) || "Вопрос для ячейки " + (i+1);
+                window.activeCell = cell;
+            };
+            board.appendChild(cell);
         }
 
-        function checkAnswer() {
-            const userAns = document.getElementById('answer-input').value.toLowerCase().trim();
-            const correctAns = questions[Array.from(board.children).indexOf(selectedCell)].a.toLowerCase().trim();
-
-            if (userAns === correctAns) {
-                selectedCell.innerText = currentPlayer === 1 ? t1Sym : t2Sym;
-                if (checkWin()) {
-                    statusDisplay.innerText = `🎉 ПОБЕДА: ${currentPlayer === 1 ? t1Name : t2Name}!`;
-                    board.style.pointerEvents = 'none';
-                } else {
-                    currentPlayer = currentPlayer === 1 ? 2 : 1;
-                    statusDisplay.innerText = `Ход: ${currentPlayer === 1 ? t1Name : t2Name}`;
-                }
-                document.getElementById('modal').style.display = 'none';
-            } else {
-                alert("Неверно! Ход переходит другой команде.");
-                currentPlayer = currentPlayer === 1 ? 2 : 1;
-                statusDisplay.innerText = `Ход: ${currentPlayer === 1 ? t1Name : t2Name}`;
-                document.getElementById('modal').style.display = 'none';
-            }
-        }
-
-        function checkWin() {
-            const cells = Array.from(board.children).map(c => c.innerText);
-            const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-            return wins.some(comb => 
-                cells[comb[0]] !== "" && 
-                cells[comb[0]] === cells[comb[1]] && 
-                cells[comb[1]] === cells[comb[2]]
-            );
+        function check() {
+            window.activeCell.innerText = cur === 1 ? t1.sym : t2.sym;
+            cur = cur === 1 ? 2 : 1;
+            status.innerText = "Ход: " + (cur === 1 ? t1.name : t2.name);
+            document.getElementById('modal').style.display = 'none';
         }
     </script>
 </body>
