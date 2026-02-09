@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amor Engine Pro</title>
+    <title>Amor Engine Final</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         :root {
             --primary: #ff4d6d;
@@ -19,20 +20,15 @@
 
         /* СТИЛИ СЕТОК */
         .board { display: grid; grid-template-columns: repeat(3, 110px); gap: 15px; z-index: 10; }
-        
-        /* Сетка: Пунктир */
         .grid-dots .cell { border: 3px dashed var(--primary); background: rgba(255,255,255,0.5); }
-        
-        /* Сетка: Сердечки */
-        .grid-hearts .cell { border: 10px solid transparent; border-image: url('https://cdn-icons-png.flaticon.com/512/833/833472.png') 30 round; }
-        
-        /* Сетка: Неон */
+        .grid-hearts .cell { border: 5px solid #ffb3c1; background: #fff; border-style: double; }
         .grid-neon .cell { border: 2px solid #fff; box-shadow: var(--neon-shadow); background: rgba(0,0,0,0.2); color: #fff; }
 
         .cell {
             width: 110px; height: 110px; border-radius: 20px;
             display: flex; align-items: center; justify-content: center;
             font-size: 50px; transition: all 0.3s ease; background: white;
+            cursor: none;
         }
 
         /* МАГИЧЕСКИЙ КУРСОР И ПЫЛЬЦА */
@@ -59,19 +55,22 @@
             box-shadow: 0 20px 50px rgba(0,0,0,0.3); text-align: center; width: 300px;
         }
 
-        .btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; margin-top: 10px; }
+        .btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; margin-top: 10px; font-weight: bold;}
+        
+        #status { font-size: 24px; color: var(--primary); margin-bottom: 20px; font-weight: bold; z-index: 10; text-shadow: 1px 1px 5px white; }
     </style>
 </head>
 <body id="main-body">
 
-    <div id="status" style="font-size: 24px; color: var(--primary); margin-bottom: 20px; font-weight: bold; z-index: 10;"></div>
+    <div id="status"></div>
     <div id="board" class="board"></div>
 
     <div id="modal">
-        <h3 id="modal-team"></h3>
-        <p id="q-text"></p>
-        <input type="text" id="ans-input" style="width: 80%; padding: 8px; margin-bottom: 10px; border: 2px solid #ffb3c1; border-radius: 10px;">
-        <button class="btn" onclick="check()">Ответить</button>
+        <h3 id="modal-team" style="color: var(--primary); margin-top: 0;"></h3>
+        <p id="q-text" style="font-size: 18px;"></p>
+        <input type="text" id="ans-input" style="width: 80%; padding: 10px; margin-bottom: 10px; border: 2px solid #ffb3c1; border-radius: 10px; outline: none;">
+        <br>
+        <button class="btn" onclick="check()">ОТВЕТИТЬ</button>
     </div>
 
     <img id="custom-cursor" src="https://cdn-icons-png.flaticon.com/512/3588/3588640.png">
@@ -82,8 +81,8 @@
         // 1. Настройка фона
         const bgs = {
             'romance': 'linear-gradient(135deg, #fff0f5, #ffdee9)',
-            'science': 'url("https://www.toptal.com/designers/subtlepatterns/uploads/micro-carbon.png") #f8f9fa',
-            'modern': '#ff4d6d'
+            'science': 'radial-gradient(circle, #ffffff 0%, #ffdee9 100%)',
+            'modern': '#ffb3c1'
         };
         document.getElementById('main-body').style.background = bgs[p.get('bg')] || bgs['romance'];
 
@@ -96,20 +95,16 @@
         const t2 = { name: p.get('t2') || "Команда 2", sym: p.get('s2') || "✉️" };
         let cur = 1;
 
-        // 4. Частицы (Пыльца)
+        // 4. Пыльца
         document.addEventListener('mousemove', (e) => {
             const c = document.getElementById('custom-cursor');
             c.style.left = e.clientX + 'px'; c.style.top = e.clientY + 'px';
-            
             if(Math.random() > 0.7) {
                 const part = document.createElement('div');
                 part.className = 'particle';
-                // Вперемешку сердечки и искры
-                const types = ['❤️', '✨', '🌸', '▫️'];
+                const types = ['❤️', '✨', '💖', '🌸'];
                 part.innerText = types[Math.floor(Math.random()*types.length)];
-                part.style.left = e.clientX + 'px';
-                part.style.top = e.clientY + 'px';
-                // Случайное направление разлета
+                part.style.left = e.clientX + 'px'; part.style.top = e.clientY + 'px';
                 part.style.setProperty('--dx', (Math.random()*100 - 50) + 'px');
                 part.style.setProperty('--dy', (Math.random()*100 - 50) + 'px');
                 document.body.appendChild(part);
@@ -117,27 +112,85 @@
             }
         });
 
-        // 5. Логика игры (упрощенно для примера)
+        // 5. Логика игры
         const status = document.getElementById('status');
         status.innerText = "Ход: " + t1.name;
 
         for(let i=0; i<9; i++) {
             const cell = document.createElement('div');
             cell.className = 'cell';
+            cell.dataset.id = i;
             cell.onclick = () => {
                 if(cell.innerText !== "") return;
+                const qData = (p.get('q'+(i+1)) || "Вопрос|Ответ").split('|');
+                window.currentQ = { q: qData[0], a: qData[1] || "" };
                 document.getElementById('modal').style.display = 'block';
-                document.getElementById('q-text').innerText = p.get('q'+(i+1)) || "Вопрос для ячейки " + (i+1);
+                document.getElementById('q-text').innerText = window.currentQ.q;
+                document.getElementById('modal-team').innerText = (cur === 1 ? t1.name : t2.name);
+                document.getElementById('ans-input').value = "";
                 window.activeCell = cell;
             };
             board.appendChild(cell);
         }
 
         function check() {
-            window.activeCell.innerText = cur === 1 ? t1.sym : t2.sym;
+            const userAns = document.getElementById('ans-input').value.toLowerCase().trim();
+            const correctAns = window.currentQ.a.toLowerCase().trim();
+
+            if(userAns === correctAns || correctAns === "") {
+                window.activeCell.innerText = cur === 1 ? t1.sym : t2.sym;
+                if(checkWin()) {
+                    status.innerText = "🏆 ПОБЕДА: " + (cur === 1 ? t1.name : t2.name);
+                    board.style.pointerEvents = 'none';
+                    launchCelebrate(); // ЗАПУСК САЛЮТА
+                } else {
+                    switchPlayer();
+                }
+            } else {
+                alert("Неверно! Попробуйте в следующий раз.");
+                switchPlayer();
+            }
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        function switchPlayer() {
             cur = cur === 1 ? 2 : 1;
             status.innerText = "Ход: " + (cur === 1 ? t1.name : t2.name);
-            document.getElementById('modal').style.display = 'none';
+        }
+
+        function checkWin() {
+            const cells = Array.from(board.children).map(c => c.innerText);
+            const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+            return wins.some(w => cells[w[0]]!=="" && cells[w[0]]===cells[w[1]] && cells[w[1]]===cells[w[2]]);
+        }
+
+        // КРАСИВЫЙ САЛЮТ
+        function launchCelebrate() {
+            const duration = 5 * 1000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+
+            const interval = setInterval(function() {
+                const timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) return clearInterval(interval);
+
+                const particleCount = 50 * (timeLeft / duration);
+                // Салют сердечками
+                confetti({
+                    ...defaults, particleCount,
+                    origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+                    colors: ['#ff4d6d', '#ffb3c1', '#ff758f'],
+                    shapes: ['circle'] // К сожалению, стандартная либа делает круги, но мы назовем их "лепестками"
+                });
+                confetti({
+                    ...defaults, particleCount,
+                    origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+                    colors: ['#ff4d6d', '#ffb3c1', '#ff758f'],
+                    shapes: ['circle']
+                });
+            }, 250);
         }
     </script>
 </body>
