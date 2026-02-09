@@ -73,10 +73,12 @@
         <button class="btn" onclick="check()">ОТВЕТИТЬ</button>
     </div>
 
-    <img id="custom-cursor" src="https://cdn-icons-png.flaticon.com/512/3588/3588640.png">
+    <img id="custom-cursor" src="">
 
     <script>
         const p = new URLSearchParams(window.location.search);
+
+        document.getElementById('custom-cursor').src = p.get('cur') || 'https://cdn-icons-png.flaticon.com/512/3588/3588640.png';
         
         // 1. Настройка фона
         const bgs = {
