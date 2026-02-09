@@ -98,13 +98,21 @@
         let cur = 1;
 
         // 4. Пыльца
+       // 4. Пыльца
         document.addEventListener('mousemove', (e) => {
             const c = document.getElementById('custom-cursor');
             c.style.left = e.clientX + 'px'; c.style.top = e.clientY + 'px';
+            
             if(Math.random() > 0.7) {
                 const part = document.createElement('div');
                 part.className = 'particle';
-                const types = ['❤️', '✨', '💖', '🌸'];
+                
+                // Умный выбор частиц в зависимости от курсора
+                const curSrc = document.getElementById('custom-cursor').src;
+                let types = ['✨', '💖', '🌸', '⚪']; 
+                if (curSrc.includes('833472')) types = ['❤️', '💖', '💕', '✨']; // если выбрано сердечко
+                if (curSrc.includes('2904973')) types = ['⚡', '✨', '🔥', '🔸']; // если выбрана стрела
+                
                 part.innerText = types[Math.floor(Math.random()*types.length)];
                 part.style.left = e.clientX + 'px'; part.style.top = e.clientY + 'px';
                 part.style.setProperty('--dx', (Math.random()*100 - 50) + 'px');
