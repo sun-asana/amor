@@ -2,169 +2,107 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Amor Editor Pro - Preview Mode</title>
+    <title>Amor Editor: Загрузка картинок</title>
     <style>
-        :root { --p: #ff4d6d; --s: #ffdee9; }
-        body { font-family: 'Segoe UI', sans-serif; background: #fdf2f5; display: flex; gap: 20px; padding: 20px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #fff0f5; color: #444; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .q-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; background: #fff5f7; padding: 15px; border-radius: 12px; margin-bottom: 10px; align-items: center; }
+        input { width: 90%; padding: 8px; border: 1px solid #ffb3c1; border-radius: 8px; }
         
-        /* Панель настроек */
-        .settings { flex: 1; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow-y: auto; height: 90vh; }
+        /* Стили для зоны загрузки */
+        .upload-zone { 
+            border: 2px dashed #ff4d6d; border-radius: 10px; padding: 10px; text-align: center; 
+            cursor: pointer; font-size: 12px; transition: 0.3s; background: white;
+        }
+        .upload-zone:hover { background: #ffeef2; }
+        .preview-img { max-height: 50px; display: none; margin: 5px auto; border-radius: 5px; }
         
-        /* Окно предпросмотра */
-        .preview-container { flex: 1; position: sticky; top: 20px; height: 90vh; background: #eee; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; border: 5px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        #preview-window { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s; position: relative; }
-        
-        /* Стили сетки в превью */
-        .p-grid { display: grid; grid-template-columns: repeat(3, 60px); gap: 10px; }
-        .p-cell { width: 60px; height: 60px; background: white; border-radius: 10px; border: 2px solid var(--s); }
-        
-        .grid-neon .p-cell { border-color: #fff; box-shadow: 0 0 10px var(--p); background: rgba(0,0,0,0.2); }
-        .grid-hearts .p-cell { border: 2px double var(--p); }
-        .grid-dots .p-cell { border: 2px dashed var(--p); }
-
-        /* Элементы формы */
-        .section { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
-        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
-        .btn-opt { padding: 8px 15px; border: 2px solid var(--s); border-radius: 20px; cursor: pointer; background: white; transition: 0.3s; }
-        .btn-opt.active { background: var(--p); color: white; border-color: var(--p); }
-        
-        input, select { width: 100%; padding: 10px; margin-top: 5px; border: 2px solid var(--s); border-radius: 10px; box-sizing: border-box; }
-        .generate-btn { background: var(--p); color: white; border: none; width: 100%; padding: 15px; border-radius: 10px; font-size: 18px; cursor: pointer; font-weight: bold; margin-top: 20px; }
-        
-        #result-area { display: none; margin-top: 15px; background: #333; color: white; padding: 15px; border-radius: 10px; font-size: 12px; word-break: break-all; }
-        
-        /* Мини-курсор в превью */
-        #p-cursor { position: absolute; width: 30px; pointer-events: none; }
+        button { background: #ff4d6d; color: white; border: none; padding: 15px 30px; border-radius: 50px; cursor: pointer; font-weight: bold; width: 100%; font-size: 18px; }
+        #result { margin-top: 20px; display: none; }
+        textarea { width: 100%; height: 100px; border-radius: 10px; border: 1px solid #ddd; padding: 10px; }
     </style>
 </head>
 <body>
 
-<div class="settings">
-    <h2 style="color: var(--p); margin-top: 0;">🏹 Amor Конструктор</h2>
+<div class="container">
+    <h2>💖 Amor Editor: Создание заданий</h2>
+    <div id="inputs-container"></div>
     
-    <div class="section">
-        <label><b>Выберите фон</b></label>
-        <div class="btn-group" id="bg-opts">
-            <div class="btn-opt active" data-val="romance">Розовый</div>
-            <div class="btn-opt" data-val="science">Светлый</div>
-            <div class="btn-opt" data-val="modern">Яркий</div>
-        </div>
-    </div>
+    <button onclick="generate()">СОЗДАТЬ ИГРУ И СКОПИРОВАТЬ КОД</button>
 
-    <div class="section">
-        <label><b>Стиль сетки</b></label>
-        <div class="btn-group" id="grid-opts">
-            <div class="btn-opt active" data-val="dots">Пунктир</div>
-            <div class="btn-opt" data-val="hearts">Двойная</div>
-            <div class="btn-opt" data-val="neon">Неон</div>
-        </div>
-    </div>
-
-    <div class="section">
-        <label><b>Курсор</b></label>
-        <select id="cursor-select">
-            <option value="https://cdn-icons-png.flaticon.com/512/3588/3588640.png">Купидон</option>
-            <option value="https://cdn-icons-png.flaticon.com/512/2904/2904973.png">Стрела</option>
-            <option value="https://cdn-icons-png.flaticon.com/512/833/833472.png">Сердечко</option>
-        </select>
-    </div>
-
-    <div class="section">
-        <label><b>Названия команд</b></label>
-        <input type="text" id="t1" placeholder="Команда 1 (напр. Сердечки)">
-        <input type="text" id="t2" placeholder="Команда 2 (напр. Конверты)">
-    </div>
-
-    <div class="section">
-        <label><b>Вопросы (9 штук)</b></label>
-        <div id="q-inputs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;"></div>
-    </div>
-
-    <button class="generate-btn" onclick="generate()">СГЕНЕРИРОВАТЬ КОД 🚀</button>
-    
-    <div id="result-area">
-        <code id="code-text"></code>
-    </div>
-</div>
-
-<div class="preview-container">
-    <div style="margin-bottom: 10px; font-weight: bold; color: #666;">ПРЕДПРОСМОТР</div>
-    <div id="preview-window">
-        <div id="p-status" style="margin-bottom: 15px; font-weight: bold; color: var(--p);">Ход: Команда 1</div>
-        <div class="p-grid" id="p-grid-box">
-            <div class="p-cell"></div><div class="p-cell"></div><div class="p-cell"></div>
-            <div class="p-cell"></div><div class="p-cell"></div><div class="p-cell"></div>
-            <div class="p-cell"></div><div class="p-cell"></div><div class="p-cell"></div>
-        </div>
-        <img id="p-cursor" src="https://cdn-icons-png.flaticon.com/512/3588/3588640.png" style="top: 70%; left: 70%;">
+    <div id="result">
+        <h3>Код для вставки в Genially:</h3>
+        <textarea id="code-box" readonly></textarea>
     </div>
 </div>
 
 <script>
-    // 1. Генерация полей ввода
-    const qContainer = document.getElementById('q-inputs');
-    for(let i=1; i<=9; i++) {
-        qContainer.innerHTML += `<input type="text" id="q${i}" placeholder="В${i}"><input type="text" id="a${i}" placeholder="О${i}">`;
+    const container = document.getElementById('inputs-container');
+    const imagesData = {}; // Объект для хранения кодов картинок
+
+    // Создаем 9 строк для вопросов
+    for (let i = 1; i <= 9; i++) {
+        container.innerHTML += `
+            <div class="q-row">
+                <input type="text" id="q${i}" placeholder="Вопрос ${i}">
+                <input type="text" id="a${i}" placeholder="Ответ ${i}">
+                <div class="upload-zone" onclick="document.getElementById('file${i}').click()" 
+                     id="zone${i}" ondrop="dropHandler(event, ${i})" ondragover="return false">
+                    <span id="text${i}">🖼️ Фото или перетащи</span>
+                    <img id="prev${i}" class="preview-img">
+                    <input type="file" id="file${i}" hidden onchange="fileHandler(this, ${i})">
+                </div>
+            </div>
+        `;
     }
 
-    // 2. Обновление превью
-    function updatePreview() {
-        const bg = document.querySelector('#bg-opts .active').dataset.val;
-        const grid = document.querySelector('#grid-opts .active').dataset.val;
-        const cursor = document.getElementById('cursor-select').value;
-        const win = document.getElementById('preview-window');
-        
-        // Фон
-        const colors = {'romance': '#fff0f5', 'science': '#f8f9fa', 'modern': '#ffb3c1'};
-        win.style.background = colors[bg];
-        
-        // Сетка
-        const gridBox = document.getElementById('p-grid-box');
-        gridBox.className = 'p-grid grid-' + grid;
-        
-        // Курсор
-        document.getElementById('p-cursor').src = cursor;
-    }
-
-    // Слушатели для кнопок-опций
-    document.querySelectorAll('.btn-opt').forEach(btn => {
-        btn.onclick = (e) => {
-            const parent = e.target.parentElement;
-            parent.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            updatePreview();
+    // Функция обработки файла
+    function processFile(file, index) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            imagesData[index] = e.target.result; // Сохраняем Base64 код картинки
+            document.getElementById('prev'+index).src = e.target.result;
+            document.getElementById('prev'+index).style.display = 'block';
+            document.getElementById('text'+index).style.display = 'none';
+            document.getElementById('zone'+index).style.borderColor = '#4CAF50';
         };
-    });
+        reader.readAsDataURL(file);
+    }
 
-    document.getElementById('cursor-select').onchange = updatePreview;
+    function fileHandler(input, index) { processFile(input.files[0], index); }
+    function dropHandler(ev, index) {
+        ev.preventDefault();
+        if (ev.dataTransfer.items) {
+            processFile(ev.dataTransfer.items[0].getAsFile(), index);
+        }
+    }
 
-    // 3. Генерация кода
     function generate() {
-        const baseUrl = "https://sun-asana.github.io/amor/index.html";
-        const bg = document.querySelector('#bg-opts .active').dataset.val;
-        const grid = document.querySelector('#grid-opts .active').dataset.val;
-        const cursor = encodeURIComponent(document.getElementById('cursor-select').value);
-        const t1 = encodeURIComponent(document.getElementById('t1').value || "Команда 1");
-        const t2 = encodeURIComponent(document.getElementById('t2').value || "Команда 2");
-
-        let url = `${baseUrl}?bg=${bg}&grid=${grid}&cur=${cursor}&t1=${t1}&t2=${t2}`;
+        const baseUrl = "https://sun-asana.github.io/amor/index.html"; // ТВОЯ ССЫЛКА НА GITHUB
+        let params = new URLSearchParams();
         
-        for(let i=1; i<=9; i++) {
-            const q = encodeURIComponent(document.getElementById('q'+i).value || `Вопрос ${i}`);
-            const a = encodeURIComponent(document.getElementById('a'+i).value || `ответ`);
-            url += `&q${i}=${q}|${a}`;
+        // Тут можно добавить выбор фона и курсора из прошлого кода
+        params.set('grid', 'hearts');
+        params.set('bg', 'romance');
+
+        for (let i = 1; i <= 9; i++) {
+            const q = document.getElementById('q'+i).value || "";
+            const a = document.getElementById('a'+i).value || "";
+            const img = imagesData[i] || "";
+            params.set('q'+i, `${q}|${a}|${img}`);
         }
 
-        const iframe = `<iframe src="${url}" width="800" height="600" frameborder="0" allowfullscreen></iframe>`;
-        document.getElementById('code-text').innerText = iframe;
-        document.getElementById('result-area').style.display = 'block';
+        const finalUrl = baseUrl + "?" + params.toString();
+        const iframe = `<iframe src="${finalUrl}" width="800" height="600" frameborder="0" allowfullscreen></iframe>`;
         
-        // Копирование в буфер
+        document.getElementById('code-box').value = iframe;
+        document.getElementById('result').style.display = 'block';
+        
+        // Копируем в буфер
         navigator.clipboard.writeText(iframe);
-        alert("Код скопирован в буфер обмена!");
+        alert("Код скопирован! Вставьте его в Genially через Insert -> Others");
     }
-
-    updatePreview();
 </script>
 
 </body>
