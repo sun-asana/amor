@@ -2,70 +2,125 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Amor Editor: Загрузка картинок</title>
+    <title>Amor Editor: Полная настройка</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #fff0f5; color: #444; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .q-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; background: #fff5f7; padding: 15px; border-radius: 12px; margin-bottom: 10px; align-items: center; }
-        input { width: 90%; padding: 8px; border: 1px solid #ffb3c1; border-radius: 8px; }
+        :root { --primary: #ff4d6d; --bg: #fff0f5; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #444; padding: 20px; display: flex; justify-content: center; }
+        .container { max-width: 900px; width: 100%; background: white; padding: 30px; border-radius: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
         
-        /* Стили для зоны загрузки */
+        h2 { text-align: center; color: var(--primary); margin-bottom: 30px; }
+        
+        .section { background: #fffafb; padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px solid #ffecf0; }
+        .section-title { font-weight: bold; margin-bottom: 15px; display: block; color: var(--primary); }
+
+        /* Настройки стиля */
+        .flex-row { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px; }
+        .opt-group { flex: 1; min-width: 200px; }
+        select, input[type="text"] { width: 100%; padding: 10px; border: 2px solid #ffdae0; border-radius: 12px; outline: none; }
+        
+        /* Сетка вопросов */
+        .q-row { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 10px; margin-bottom: 10px; align-items: center; }
+        
         .upload-zone { 
-            border: 2px dashed #ff4d6d; border-radius: 10px; padding: 10px; text-align: center; 
-            cursor: pointer; font-size: 12px; transition: 0.3s; background: white;
+            border: 2px dashed #ffb3c1; border-radius: 12px; padding: 8px; text-align: center; 
+            cursor: pointer; font-size: 13px; background: white; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; min-height: 40px;
         }
-        .upload-zone:hover { background: #ffeef2; }
-        .preview-img { max-height: 50px; display: none; margin: 5px auto; border-radius: 5px; }
+        .upload-zone:hover { border-color: var(--primary); background: #fff5f7; }
+        .preview-img { max-height: 35px; border-radius: 5px; margin-right: 10px; display: none; }
+
+        button { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 50px; cursor: pointer; font-weight: bold; width: 100%; font-size: 18px; transition: 0.3s; margin-top: 10px; }
+        button:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(255, 77, 109, 0.3); }
+
+        #result { margin-top: 25px; display: none; animation: fadeIn 0.5s; }
+        textarea { width: 100%; height: 80px; border-radius: 15px; border: 2px solid #eee; padding: 15px; box-sizing: border-box; resize: none; font-family: monospace; }
         
-        button { background: #ff4d6d; color: white; border: none; padding: 15px 30px; border-radius: 50px; cursor: pointer; font-weight: bold; width: 100%; font-size: 18px; }
-        #result { margin-top: 20px; display: none; }
-        textarea { width: 100%; height: 100px; border-radius: 10px; border: 1px solid #ddd; padding: 10px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>💖 Amor Editor: Создание заданий</h2>
-    <div id="inputs-container"></div>
+    <h2>💖 Amor Editor: Конструктор игры</h2>
+
+    <div class="section">
+        <span class="section-title">1. Оформление и команды</span>
+        <div class="flex-row">
+            <div class="opt-group">
+                <label>Стиль сетки:</label>
+                <select id="grid-select">
+                    <option value="hearts">Линии из сердечек ❤️</option>
+                    <option value="dots">Пунктирная сетка ⋯</option>
+                    <option value="neon">Неоновые линии 💡</option>
+                </select>
+            </div>
+            <div class="opt-group">
+                <label>Фон страницы:</label>
+                <select id="bg-select">
+                    <option value="romance">Розовый градиент</option>
+                    <option value="science">Светлый радиальный</option>
+                    <option value="modern">Яркий розовый</option>
+                </select>
+            </div>
+            <div class="opt-group">
+                <label>Магический курсор:</label>
+                <select id="cursor-select">
+                    <option value="https://cdn-icons-png.flaticon.com/512/833/833472.png">Сердечко</option>
+                    <option value="https://cdn-icons-png.flaticon.com/512/2904/2904973.png">Стрела Купидона</option>
+                    <option value="https://cdn-icons-png.flaticon.com/512/3588/3588640.png">Ангелочек</option>
+                </select>
+            </div>
+        </div>
+        <div class="flex-row">
+            <input type="text" id="t1" placeholder="Название Команды 1 (❤️)" style="flex: 1;">
+            <input type="text" id="t2" placeholder="Название Команды 2 (✉️)" style="flex: 1;">
+        </div>
+    </div>
+
+    <div class="section">
+        <span class="section-title">2. Вопросы, ответы и картинки (перетащите фото в поле)</span>
+        <div id="questions-grid"></div>
+    </div>
     
-    <button onclick="generate()">СОЗДАТЬ ИГРУ И СКОПИРОВАТЬ КОД</button>
+    <button onclick="generate()">СГЕНЕРИРОВАТЬ ИГРУ</button>
 
     <div id="result">
-        <h3>Код для вставки в Genially:</h3>
+        <span class="section-title">Готово! Скопируйте код для Genially:</span>
         <textarea id="code-box" readonly></textarea>
+        <p style="font-size: 12px; color: #888; text-align: center;">Вставьте этот код в Genially через Insert -> Others (Вставить -> Другое)</p>
     </div>
 </div>
 
 <script>
-    const container = document.getElementById('inputs-container');
-    const imagesData = {}; // Объект для хранения кодов картинок
+    const gridContainer = document.getElementById('questions-grid');
+    const imagesData = {};
 
-    // Создаем 9 строк для вопросов
+    // Создаем поля для 9 вопросов
     for (let i = 1; i <= 9; i++) {
-        container.innerHTML += `
+        gridContainer.innerHTML += `
             <div class="q-row">
                 <input type="text" id="q${i}" placeholder="Вопрос ${i}">
-                <input type="text" id="a${i}" placeholder="Ответ ${i}">
+                <input type="text" id="a${i}" placeholder="Ответ">
                 <div class="upload-zone" onclick="document.getElementById('file${i}').click()" 
                      id="zone${i}" ondrop="dropHandler(event, ${i})" ondragover="return false">
-                    <span id="text${i}">🖼️ Фото или перетащи</span>
                     <img id="prev${i}" class="preview-img">
-                    <input type="file" id="file${i}" hidden onchange="fileHandler(this, ${i})">
+                    <span id="text${i}">🖼️ Фото (URL или файл)</span>
+                    <input type="file" id="file${i}" hidden onchange="fileHandler(this, ${i})" accept="image/*">
                 </div>
             </div>
         `;
     }
 
-    // Функция обработки файла
     function processFile(file, index) {
         if (!file) return;
         const reader = new FileReader();
         reader.onload = (e) => {
-            imagesData[index] = e.target.result; // Сохраняем Base64 код картинки
-            document.getElementById('prev'+index).src = e.target.result;
-            document.getElementById('prev'+index).style.display = 'block';
-            document.getElementById('text'+index).style.display = 'none';
-            document.getElementById('zone'+index).style.borderColor = '#4CAF50';
+            imagesData[index] = e.target.result;
+            const prev = document.getElementById('prev'+index);
+            prev.src = e.target.result;
+            prev.style.display = 'block';
+            document.getElementById('text'+index).innerText = "Заменено ✅";
+            document.getElementById('zone'+index).style.borderColor = "#4CAF50";
         };
         reader.readAsDataURL(file);
     }
@@ -73,18 +128,18 @@
     function fileHandler(input, index) { processFile(input.files[0], index); }
     function dropHandler(ev, index) {
         ev.preventDefault();
-        if (ev.dataTransfer.items) {
-            processFile(ev.dataTransfer.items[0].getAsFile(), index);
-        }
+        if (ev.dataTransfer.files) processFile(ev.dataTransfer.files[0], index);
     }
 
     function generate() {
-        const baseUrl = "https://sun-asana.github.io/amor/index.html"; // ТВОЯ ССЫЛКА НА GITHUB
+        const baseUrl = "https://sun-asana.github.io/amor/index.html"; 
         let params = new URLSearchParams();
         
-        // Тут можно добавить выбор фона и курсора из прошлого кода
-        params.set('grid', 'hearts');
-        params.set('bg', 'romance');
+        params.set('grid', document.getElementById('grid-select').value);
+        params.set('bg', document.getElementById('bg-select').value);
+        params.set('cur', document.getElementById('cursor-select').value);
+        params.set('t1', document.getElementById('t1').value || "Команда 1");
+        params.set('t2', document.getElementById('t2').value || "Команда 2");
 
         for (let i = 1; i <= 9; i++) {
             const q = document.getElementById('q'+i).value || "";
@@ -99,9 +154,8 @@
         document.getElementById('code-box').value = iframe;
         document.getElementById('result').style.display = 'block';
         
-        // Копируем в буфер
         navigator.clipboard.writeText(iframe);
-        alert("Код скопирован! Вставьте его в Genially через Insert -> Others");
+        alert("Код скопирован! Теперь вставьте его в Genially.");
     }
 </script>
 
