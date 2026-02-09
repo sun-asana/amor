@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Valentine Tic-Tac-Toe Engine</title>
+    <style>
+        :root {
+            --bg-color: #fff0f5;
+            --accent-color: #ff4d6d;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            /* Скрываем стандартный курсор, если выбран кастомный */
+            cursor: none; 
+        }
+
+        #game-info {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: var(--accent-color);
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 120px);
+            grid-template-rows: repeat(3, 120px);
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(255, 77, 109, 0.2);
+        }
+
+        .cell {
+            background: white;
+            border: 3px solid #ffb3c1;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .cell:hover {
+            transform: scale(1.05);
+            border-color: var(--accent-color);
+        }
+
+        /* Частицы шлейфа */
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            animation: fadeOut 1s forwards;
+        }
+
+        /* Купидон-курсор */
+        #custom-cursor {
+            position: fixed;
+            width: 50px;
+            height: 50px;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: scale(1) translateY(0); }
+            to { opacity: 0; transform: scale(0.5) translateY(20px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-info">Ход: <span id="current-team">Команда 1</span></div>
+    <div class="grid" id="board">
+        </div>
+
+    <img id="custom-cursor" src="https://cdn-icons-png.flaticon.com/512/3588/3588640.png" alt="Cupid">
+
+    <script>
+        // 1. Получаем настройки из URL
+        const params = new URLSearchParams(window.location.search);
+        const team1Name = params.get('t1') || "Команда Сердечек";
+        const team2Name = params.get('t2') || "Команда Конвертов";
+        const themeColor = params.get('color') || "#ff4d6d";
+
+        let currentPlayer = 1; // 1 или 2
+        document.getElementById('current-team').innerText = team1Name;
+
+        // 2. Логика шлейфа
+        document.addEventListener('mousemove', (e) => {
+            const cursor = document.getElementById('custom-cursor');
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+
+            createParticle(e.clientX, e.clientY);
+        });
+
+        function createParticle(x, y) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.innerText = '❤'; // Можно менять на иконки
+            p.style.left = x + 'px';
+            p.style.top = y + 'px';
+            p.style.color = themeColor;
+            p.style.fontSize = Math.random() * 15 + 10 + 'px';
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 1000);
+        }
+
+        // 3. Создание поля
+        const board = document.getElementById('board');
+        for (let i = 0; i < 9; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.dataset.index = i;
+            cell.onclick = () => handleCellClick(cell);
+            board.appendChild(cell);
+        }
+
+        function handleCellClick(cell) {
+            if (cell.innerText !== "") return;
+            
+            // Здесь будет логика вопроса! (Добавим в следующем шаге)
+            // Пока просто ставим символ
+            cell.innerText = currentPlayer === 1 ? "❤️" : "✉️";
+            cell.style.color = currentPlayer === 1 ? "#ff4d6d" : "#4a90e2";
+            
+            currentPlayer = currentPlayer === 1 ? 2 : 1;
+            document.getElementById('current-team').innerText = 
+                currentPlayer === 1 ? team1Name : team2Name;
+        }
+    </script>
+</body>
+</html>
