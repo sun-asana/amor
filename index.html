@@ -37,19 +37,18 @@
             z-index: -1;
         }
 
-        /* 1. СЕТКА ИЗ СЕРДЕЧЕК — ФИНАЛЬНАЯ ВЕРСИЯ */
+       /* 1. СЕТКА ИЗ СЕРДЕЧЕК — МЕТОД BACKGROUND REPEAT */
         .grid-hearts::before {
             content: '';
             position: absolute;
             left: 110px; top: 0; bottom: 0; width: 140px;
             z-index: -1;
-            /* Устанавливаем ширину рамки */
-            border-left: 18px solid transparent;
-            border-right: 18px solid transparent;
-            /* Источник и настройки нарезки */
-            border-image-source: url('https://cdn-icons-png.flaticon.com/512/833/833472.png');
-            border-image-slice: 10%; /* Используем проценты для лучшей совместимости */
-            border-image-repeat: repeat; /* Ключевое слово для размножения */
+            /* Используем фон вместо рамки */
+            background-image: url('https://cdn-icons-png.flaticon.com/512/833/833472.png'), 
+                              url('https://cdn-icons-png.flaticon.com/512/833/833472.png');
+            background-position: left center, right center;
+            background-repeat: repeat-y; /* Повторяем только по вертикали */
+            background-size: 20px; /* Размер одного сердечка */
         }
 
         .grid-hearts::after {
@@ -57,11 +56,11 @@
             position: absolute;
             top: 110px; left: 0; right: 0; height: 140px;
             z-index: -1;
-            border-top: 18px solid transparent;
-            border-bottom: 18px solid transparent;
-            border-image-source: url('https://cdn-icons-png.flaticon.com/512/833/833472.png');
-            border-image-slice: 10%;
-            border-image-repeat: repeat;
+            background-image: url('https://cdn-icons-png.flaticon.com/512/833/833472.png'), 
+                              url('https://cdn-icons-png.flaticon.com/512/833/833472.png');
+            background-position: center top, center bottom;
+            background-repeat: repeat-x; /* Повторяем только по горизонтали */
+            background-size: 20px;
         }
 
         /* 2. СЕТКА ПУНКТИРОМ */
