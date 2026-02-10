@@ -37,18 +37,31 @@
             z-index: -1;
         }
 
-        /* 1. СЕТКА ИЗ СЕРДЕЧЕК */
+        /* 1. СЕТКА ИЗ СЕРДЕЧЕК — ИСПРАВЛЕННАЯ ВЕРСИЯ */
         .grid-hearts::before {
+            content: '';
+            position: absolute;
             left: 110px; top: 0; bottom: 0; width: 140px;
+            z-index: -1;
+            /* Добавляем явную рамку, чтобы border-image заработал */
             border-left: 20px solid transparent;
             border-right: 20px solid transparent;
-            border-image: url('https://cdn-icons-png.flaticon.com/512/833/833472.png') 30 repeat;
+            border-image-source: url('https://cdn-icons-png.flaticon.com/512/833/833472.png');
+            border-image-slice: 30;
+            border-image-repeat: repeat;
         }
+
         .grid-hearts::after {
+            content: '';
+            position: absolute;
             top: 110px; left: 0; right: 0; height: 140px;
+            z-index: -1;
+            /* Добавляем явную рамку здесь тоже */
             border-top: 20px solid transparent;
             border-bottom: 20px solid transparent;
-            border-image: url('https://cdn-icons-png.flaticon.com/512/833/833472.png') 30 repeat;
+            border-image-source: url('https://cdn-icons-png.flaticon.com/512/833/833472.png');
+            border-image-slice: 30;
+            border-image-repeat: repeat;
         }
 
         /* 2. СЕТКА ПУНКТИРОМ */
