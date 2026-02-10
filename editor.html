@@ -2,106 +2,90 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Amor Editor: Предпросмотр</title>
+    <title>Amor Editor: Split View</title>
     <style>
         :root { --primary: #ff4d6d; --bg: #fff0f5; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #444; padding: 20px; display: flex; justify-content: center; }
-        .container { max-width: 900px; width: 100%; background: white; padding: 30px; border-radius: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #444; }
         
-        h2 { text-align: center; color: var(--primary); margin-bottom: 30px; }
+        /* Двухпанельный макет */
+        .main-layout { display: flex; gap: 25px; max-width: 1400px; margin: 0 auto; align-items: flex-start; }
         
-        .section { background: #fffafb; padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px solid #ffecf0; }
-        .section-title { font-weight: bold; margin-bottom: 15px; display: block; color: var(--primary); }
+        .editor-side { flex: 1.2; background: white; padding: 25px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .preview-side { flex: 1; position: sticky; top: 20px; }
 
-        .flex-row { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px; }
-        .opt-group { flex: 1; min-width: 200px; }
-        select, input[type="text"] { width: 100%; padding: 10px; border: 2px solid #ffdae0; border-radius: 12px; outline: none; }
+        h2 { color: var(--primary); text-align: center; margin-top: 0; }
+        .section { background: #fffafb; padding: 15px; border-radius: 20px; margin-bottom: 15px; border: 1px solid #ffecf0; }
+        .section-title { font-weight: bold; color: var(--primary); margin-bottom: 10px; display: block; }
+
+        .flex-row { display: flex; gap: 10px; flex-wrap: wrap; }
+        select, input[type="text"] { flex: 1; padding: 10px; border: 2px solid #ffdae0; border-radius: 12px; outline: none; margin-bottom: 5px; }
         
-        .q-row { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 10px; margin-bottom: 10px; align-items: center; }
+        .q-row { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 8px; margin-bottom: 8px; }
         
         .upload-zone { 
-            border: 2px dashed #ffb3c1; border-radius: 12px; padding: 8px; text-align: center; 
-            cursor: pointer; font-size: 13px; background: white; transition: 0.3s;
-            display: flex; align-items: center; justify-content: center; min-height: 40px;
+            border: 2px dashed #ffb3c1; border-radius: 12px; padding: 5px; text-align: center; 
+            cursor: pointer; font-size: 12px; background: white; display: flex; align-items: center; justify-content: center;
         }
-        .upload-zone:hover { border-color: var(--primary); background: #fff5f7; }
-        .preview-img { max-height: 35px; border-radius: 5px; margin-right: 10px; display: none; }
+        .preview-img { max-height: 30px; border-radius: 5px; margin-right: 5px; display: none; }
 
-        button { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 50px; cursor: pointer; font-weight: bold; width: 100%; font-size: 18px; transition: 0.3s; margin-top: 10px; }
-        button:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(255, 77, 109, 0.3); }
+        button { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 50px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; transition: 0.3s; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 77, 109, 0.3); }
 
-        /* --- СТИЛИ ПРЕДПРОСМОТРА И РЕЗУЛЬТАТА --- */
-        #result { margin-top: 25px; display: none; animation: fadeIn 0.5s; }
-        textarea { width: 100%; height: 80px; border-radius: 15px; border: 2px solid #eee; padding: 15px; box-sizing: border-box; resize: none; font-family: monospace; margin-bottom: 20px; }
-        
         #preview-container { 
-            width: 100%; height: 500px; border: 5px solid #ffdae0; border-radius: 20px; 
-            overflow: hidden; background: #eee; margin-top: 15px; 
+            width: 100%; height: 600px; border: 8px solid white; border-radius: 40px; 
+            overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1); background: #eee;
         }
         iframe { width: 100%; height: 100%; border: none; }
         
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        textarea { width: 100%; height: 60px; margin-top: 10px; border-radius: 10px; border: 1px solid #ddd; padding: 10px; font-size: 11px; resize: none; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>💖 Amor Editor: Конструктор игры</h2>
-
-    <div class="section">
-        <span class="section-title">1. Оформление и команды</span>
-        <div class="flex-row">
-            <div class="opt-group">
-                <label>Стиль сетки:</label>
+<div class="main-layout">
+    <div class="editor-side">
+        <h2>💖 Amor Editor</h2>
+        
+        <div class="section">
+            <span class="section-title">1. Стиль и Команды</span>
+            <div class="flex-row">
                 <select id="grid-select">
                     <option value="hearts">Линии из сердечек ❤️</option>
                     <option value="dots">Пунктирная сетка ⋯</option>
                     <option value="neon">Неоновые линии 💡</option>
                 </select>
-            </div>
-            <div class="opt-group">
-                <label>Фон страницы:</label>
                 <select id="bg-select">
                     <option value="romance">Розовый градиент</option>
                     <option value="science">Светлый радиальный</option>
                     <option value="modern">Яркий розовый</option>
                 </select>
             </div>
-            <div class="opt-group">
-                <label>Магический курсор:</label>
-                <select id="cursor-select">
-                    <option value="https://cdn-icons-png.flaticon.com/512/833/833472.png">Сердечко</option>
-                    <option value="https://cdn-icons-png.flaticon.com/512/2904/2904973.png">Стрела Купидона</option>
-                    <option value="https://cdn-icons-png.flaticon.com/512/3588/3588640.png">Ангелочек</option>
-                </select>
-            </div>
-        </div>
-        <div class="flex-row">
-            <input type="text" id="t1" placeholder="Название Команды 1 (❤️)" style="flex: 1;">
-            <input type="text" id="t2" placeholder="Название Команды 2 (✉️)" style="flex: 1;">
-        </div>
-    </div>
-
-    <div class="section">
-        <span class="section-title">2. Вопросы, ответы и картинки (перетащите фото в поле)</span>
-        <div id="questions-grid"></div>
-    </div>
-    
-    <button onclick="generate()">СГЕНЕРИРОВАТЬ И ПРЕДПРОСМОТР</button>
-
-    <div id="result">
-        <div class="section">
-            <span class="section-title">👀 Предпросмотр игры:</span>
-            <div id="preview-container">
-                <iframe id="preview-frame" src=""></iframe>
+            <div class="flex-row" style="margin-top: 10px;">
+                <input type="text" id="t1" placeholder="Команда 1 (❤️)">
+                <input type="text" id="t2" placeholder="Команда 2 (✉️)">
             </div>
         </div>
 
         <div class="section">
-            <span class="section-title">📎 Код для вставки в Genially:</span>
+            <span class="section-title">2. Вопросы (перетащи картинку в поле)</span>
+            <div id="questions-grid"></div>
+        </div>
+        
+        <button onclick="generate()">ОБНОВИТЬ ПРЕДПРОСМОТР ✨</button>
+        
+        <div id="result-box" style="display:none; margin-top:15px;">
+            <span style="font-size: 12px; color: #888;">Код для Genially (Insert -> Others):</span>
             <textarea id="code-box" readonly></textarea>
-            <p style="font-size: 12px; color: #888; text-align: center;">Скопируйте код и вставьте в Genially (Insert -> Others)</p>
         </div>
+    </div>
+
+    <div class="preview-side">
+        <div id="preview-container">
+            <iframe id="preview-frame" src="about:blank"></iframe>
+        </div>
+        <p style="text-align: center; color: var(--primary); font-size: 14px; font-weight: bold;">
+            👀 Ваша игра будет выглядеть так
+        </p>
     </div>
 </div>
 
@@ -117,11 +101,10 @@
                 <div class="upload-zone" onclick="document.getElementById('file${i}').click()" 
                      id="zone${i}" ondrop="dropHandler(event, ${i})" ondragover="return false">
                     <img id="prev${i}" class="preview-img">
-                    <span id="text${i}">🖼️ Фото (URL или файл)</span>
+                    <span id="text${i}">🖼️ Фото</span>
                     <input type="file" id="file${i}" hidden onchange="fileHandler(this, ${i})" accept="image/*">
                 </div>
-            </div>
-        `;
+            </div>`;
     }
 
     function processFile(file, index) {
@@ -130,9 +113,8 @@
         reader.onload = (e) => {
             imagesData[index] = e.target.result;
             const prev = document.getElementById('prev'+index);
-            prev.src = e.target.result;
-            prev.style.display = 'block';
-            document.getElementById('text'+index).innerText = "Заменено ✅";
+            prev.src = e.target.result; prev.style.display = 'block';
+            document.getElementById('text'+index).innerText = "✅";
             document.getElementById('zone'+index).style.borderColor = "#4CAF50";
         };
         reader.readAsDataURL(file);
@@ -150,7 +132,6 @@
         
         params.set('grid', document.getElementById('grid-select').value);
         params.set('bg', document.getElementById('bg-select').value);
-        params.set('cur', document.getElementById('cursor-select').value);
         params.set('t1', document.getElementById('t1').value || "Команда 1");
         params.set('t2', document.getElementById('t2').value || "Команда 2");
 
@@ -162,21 +143,10 @@
         }
 
         const finalUrl = baseUrl + "?" + params.toString();
-        
-        // Обновляем фрейм предпросмотра
         document.getElementById('preview-frame').src = finalUrl;
-        
-        // Генерируем код для Genially
-        const iframe = `<iframe src="${finalUrl}" width="800" height="600" frameborder="0" allowfullscreen></iframe>`;
-        document.getElementById('code-box').value = iframe;
-        
-        // Показываем блок результата
-        document.getElementById('result').style.display = 'block';
-        
-        // Прокручиваем к предпросмотру
-        window.scrollTo({ top: document.getElementById('result').offsetTop, behavior: 'smooth' });
+        document.getElementById('code-box').value = `<iframe src="${finalUrl}" width="800" height="600" frameborder="0" allowfullscreen></iframe>`;
+        document.getElementById('result-box').style.display = 'block';
     }
 </script>
-
 </body>
 </html>
