@@ -37,18 +37,19 @@
             z-index: -1;
         }
 
-        /* 1. СЕТКА ИЗ СЕРДЕЧЕК — ИСПРАВЛЕННАЯ ВЕРСИЯ */
+        /* 1. СЕТКА ИЗ СЕРДЕЧЕК — ФИНАЛЬНАЯ ВЕРСИЯ */
         .grid-hearts::before {
             content: '';
             position: absolute;
             left: 110px; top: 0; bottom: 0; width: 140px;
             z-index: -1;
-            /* Добавляем явную рамку, чтобы border-image заработал */
-            border-left: 20px solid transparent;
-            border-right: 20px solid transparent;
+            /* Устанавливаем ширину рамки */
+            border-left: 18px solid transparent;
+            border-right: 18px solid transparent;
+            /* Источник и настройки нарезки */
             border-image-source: url('https://cdn-icons-png.flaticon.com/512/833/833472.png');
-            border-image-slice: 30;
-            border-image-repeat: repeat;
+            border-image-slice: 10%; /* Используем проценты для лучшей совместимости */
+            border-image-repeat: repeat; /* Ключевое слово для размножения */
         }
 
         .grid-hearts::after {
@@ -56,11 +57,10 @@
             position: absolute;
             top: 110px; left: 0; right: 0; height: 140px;
             z-index: -1;
-            /* Добавляем явную рамку здесь тоже */
-            border-top: 20px solid transparent;
-            border-bottom: 20px solid transparent;
+            border-top: 18px solid transparent;
+            border-bottom: 18px solid transparent;
             border-image-source: url('https://cdn-icons-png.flaticon.com/512/833/833472.png');
-            border-image-slice: 30;
+            border-image-slice: 10%;
             border-image-repeat: repeat;
         }
 
