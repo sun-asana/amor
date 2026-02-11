@@ -24,33 +24,32 @@
 
         .board { 
             display: grid; 
-            grid-template-columns: repeat(3, 110px); 
-            grid-template-rows: repeat(3, 110px); 
-            gap: 15px; 
+            grid-template-columns: repeat(3, 150px); 
+            grid-template-rows: repeat(3, 150px); 
+            gap: 20px; 
             z-index: 10; 
             position: relative;
-            width: 360px;
-            height: 360px;
+            width: 490px;
+            height: 490px;
             
-            /* Магия SVG-трафарета */
             -webkit-mask-size: 100% 100%;
             mask-size: 100% 100%;
             -webkit-mask-repeat: no-repeat;
             mask-repeat: no-repeat;
-
-            /* Цвет сетки берется из переменной */
             background-color: var(--grid-color); 
         }
 
-        /* Классы для выбора маски (твои SVG в папке assets) */
+        /* ЭТИ ТРИ СТРОЧКИ ОБЯЗАТЕЛЬНО ОСТАВЬ: */
         .grid-hearts { -webkit-mask-image: url('assets/grid-hearts.svg'); mask-image: url('assets/grid-hearts.svg'); }
         .grid-dots { -webkit-mask-image: url('assets/grid-dots.svg'); mask-image: url('assets/grid-dots.svg'); }
         .grid-neon { -webkit-mask-image: url('assets/grid-neon.svg'); mask-image: url('assets/grid-neon.svg'); }
-       
+        
         .cell {
-            width: 110px; height: 110px;
+            width: 150px; 
+            height: 150px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 50px; transition: all 0.3s ease; 
+            font-size: 80px; 
+            transition: all 0.3s ease; 
             background: transparent;
             cursor: none;
             user-select: none;
