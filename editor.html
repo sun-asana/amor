@@ -85,6 +85,12 @@
             width: 100%; height: 100px; margin-top: 15px; border-radius: 15px; 
             border: 1px solid #ddd; padding: 15px; font-size: 12px; color: #666; resize: none;
         }
+
+        /* Стиль для маленькой кнопки копирования */
+        .copy-btn {
+            width: auto; padding: 8px 15px; font-size: 12px; margin: 0;
+            background: var(--primary); border-radius: 10px;
+        }
     </style>
 </head>
 <body>
@@ -155,7 +161,10 @@
         <button onclick="generate()">ОБНОВИТЬ ИГРУ ✨</button>
         
         <div id="result-box" style="display:none; margin-top:20px;">
-            <span style="font-size: 12px; color: #888; font-weight: bold;">Код для вставки в Genially:</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 12px; color: #888; font-weight: bold;">Код для вставки в Genially:</span>
+                <button id="copy-btn" onclick="copyCode()" class="copy-btn">Копировать 📋</button>
+            </div>
             <textarea id="code-box" readonly></textarea>
         </div>
     </div>
@@ -211,7 +220,6 @@
         const baseUrl = "index.html"; 
         let params = new URLSearchParams();
         
-        // 1. Общие настройки
         params.set('grid', document.getElementById('grid-select').value);
         params.set('cur', document.getElementById('cur-select').value);
         params.set('bg', document.getElementById('bg-select').value);
@@ -219,13 +227,11 @@
         const colorValue = document.getElementById('grid-color').value.substring(1);
         params.set('gc', colorValue);
 
-        // 2. Команды и ИХ СИМВОЛЫ
         params.set('t1', document.getElementById('t1').value || "Команда 1");
         params.set('s1', document.getElementById('s1').value); 
         params.set('t2', document.getElementById('t2').value || "Команда 2");
         params.set('s2', document.getElementById('s2').value);
 
-        // 3. Вопросы
         for (let i = 1; i <= 9; i++) {
             const q = document.getElementById('q'+i).value || "";
             const a = document.getElementById('a'+i).value || "";
@@ -234,12 +240,30 @@
         }
 
         const finalUrl = baseUrl + "?" + params.toString();
-        
         document.getElementById('preview-frame').src = finalUrl;
         
         const fullUrl = window.location.href.replace('editor.html', '') + finalUrl;
         document.getElementById('code-box').value = `<iframe src="${fullUrl}" width="800" height="600" frameborder="0" allowtransparency="true" allowfullscreen></iframe>`;
         document.getElementById('result-box').style.display = 'block';
+    }
+
+    // НОВАЯ ФУНКЦИЯ ДЛЯ КОПИРОВАНИЯ
+    function copyCode() {
+        const codeBox = document.getElementById('code-box');
+        const btn = document.getElementById('copy-btn');
+        
+        codeBox.select();
+        codeBox.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(codeBox.value);
+
+        const originalText = btn.innerText;
+        btn.innerText = "Скопировано! ✅";
+        btn.style.background = "#4CAF50";
+
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.style.background = "#ff4d6d";
+        }, 2000);
     }
 </script>
 </body>
