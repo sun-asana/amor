@@ -68,14 +68,13 @@
         }
         button:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(255, 77, 109, 0.4); }
 
-        /* ПРАВАЯ ПАНЕЛЬ (ПРЕДПРОСМОТР) */
         .preview-side { flex: 1; position: sticky; top: 20px; text-align: center; }
         
         #preview-container { 
             width: 100%; 
-            height: 500px; /* Уменьшили высоту с 650px до 500px для прямоугольного вида */
+            height: 500px; 
             border: 12px solid white; 
-            border-radius: 30px; /* Немного уменьшили скругление для строгости */
+            border-radius: 30px; 
             overflow: hidden; 
             box-shadow: 0 30px 60px rgba(0,0,0,0.15); 
             background: #eee;
@@ -114,22 +113,37 @@
                     <option value="arrow">Курсор: Стрела Амура 🏹</option>
                 </select>
                 <select id="bg-select">
-    <option value="none">✨ Без фона (прозрачный)</option>
-    <option value="1">Фон 1 🌸</option>
-    <option value="2">Фон 2 🎀</option>
-    <option value="3">Фон 3 💖</option>
-    <option value="4">Фон 4 ✨</option>
-    <option value="5">Фон 5 🍭</option>
-    <option value="6">Фон 6 🦄</option>
-</select>
+                    <option value="none">✨ Без фона (прозрачный)</option>
+                    <option value="1">Фон 1 🌸</option>
+                    <option value="2">Фон 2 🎀</option>
+                    <option value="3">Фон 3 💖</option>
+                    <option value="4">Фон 4 ✨</option>
+                    <option value="5">Фон 5 🍭</option>
+                    <option value="6">Фон 6 🦄</option>
+                </select>
             </div>
         </div>
 
         <div class="section">
-            <span class="section-title">2. Команды</span>
+            <span class="section-title">2. Команды и Символы</span>
             <div class="flex-row">
-                <input type="text" id="t1" placeholder="Имя команды 1 (напр. Девочки)">
-                <input type="text" id="t2" placeholder="Имя команды 2 (напр. Мальчики)">
+                <input type="text" id="t1" placeholder="Команда 1 (напр. Девочки)">
+                <select id="s1" style="flex: 0.4;">
+                    <option value="❤️">❤️ Сердце</option>
+                    <option value="✉️">✉️ Письмо</option>
+                    <option value="👼">👼 Амур</option>
+                    <option value="🏹">🏹 Стрела</option>
+                    <option value="❌">❌ Крестик</option>
+                </select>
+            </div>
+            <div class="flex-row">
+                <input type="text" id="t2" placeholder="Команда 2 (напр. Мальчики)">
+                <select id="s2" style="flex: 0.4;">
+                    <option value="✉️">✉️ Письмо</option>
+                    <option value="❤️">❤️ Сердце</option>
+                    <option value="❌">❌ Крестик</option>
+                    <option value="⭕">⭕ Нолик</option>
+                </select>
             </div>
         </div>
 
@@ -197,15 +211,21 @@
         const baseUrl = "index.html"; 
         let params = new URLSearchParams();
         
+        // 1. Общие настройки
         params.set('grid', document.getElementById('grid-select').value);
         params.set('cur', document.getElementById('cur-select').value);
         params.set('bg', document.getElementById('bg-select').value);
-        params.set('t1', document.getElementById('t1').value || "Команда 1");
-        params.set('t2', document.getElementById('t2').value || "Команда 2");
         
         const colorValue = document.getElementById('grid-color').value.substring(1);
         params.set('gc', colorValue);
 
+        // 2. Команды и ИХ СИМВОЛЫ
+        params.set('t1', document.getElementById('t1').value || "Команда 1");
+        params.set('s1', document.getElementById('s1').value); 
+        params.set('t2', document.getElementById('t2').value || "Команда 2");
+        params.set('s2', document.getElementById('s2').value);
+
+        // 3. Вопросы
         for (let i = 1; i <= 9; i++) {
             const q = document.getElementById('q'+i).value || "";
             const a = document.getElementById('a'+i).value || "";
@@ -215,17 +235,10 @@
 
         const finalUrl = baseUrl + "?" + params.toString();
         
-        // ВОТ ТУТ ТВОЯ МАГИЯ:
-        // 1. Обновляем превью справа
         document.getElementById('preview-frame').src = finalUrl;
         
-        // 2. Делаем ссылку для Genially
         const fullUrl = window.location.href.replace('editor.html', '') + finalUrl;
-        
-        // 3. Формируем код с прозрачностью (allowtransparency="true")
         document.getElementById('code-box').value = `<iframe src="${fullUrl}" width="800" height="600" frameborder="0" allowtransparency="true" allowfullscreen></iframe>`;
-        
-        // 4. Показываем результат
         document.getElementById('result-box').style.display = 'block';
     }
 </script>
