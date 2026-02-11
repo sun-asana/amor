@@ -115,25 +115,18 @@ const cursors = {
         const curType = p.get('cur') || 'amor';
         document.getElementById('custom-cursor').src = cursors[curType] || cursors['amor'];
         
-        // 3. УСТАНОВКА ФОНА
+       // 3. УСТАНОВКА ФОНА
 const bgParam = p.get('bg') || 'none';
 const mainBody = document.getElementById('main-body');
 
 if (bgParam === 'none') {
-    // Делаем всё прозрачным
     mainBody.style.background = 'transparent';
     document.documentElement.style.background = 'transparent';
 } else {
-    const bgs = {
-        'romance': "url('assets/bg-romance.jpg')",
-        'science': "url('assets/bg-science.jpg')",
-        'modern': "url('assets/bg-modern.jpg')"
-    };
-    if (bgs[bgParam]) {
-        mainBody.style.backgroundImage = bgs[bgParam];
-        mainBody.style.backgroundSize = 'cover';
-        mainBody.style.backgroundPosition = 'center';
-    }
+    // Если параметр — это число 1-6, подставляем его в путь к файлу
+    mainBody.style.backgroundImage = `url('assets/bg-${bgParam}.jpg')`;
+    mainBody.style.backgroundSize = 'cover';
+    mainBody.style.backgroundPosition = 'center';
 }
 
         // 4. СЕТКА
