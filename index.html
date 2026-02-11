@@ -89,18 +89,19 @@
         #q-img { max-width: 100%; max-height: 200px; border-radius: 15px; margin-bottom: 10px; display: none; }
         .btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; margin-top: 10px; font-weight: bold;}
         
-    #status { 
-        font-size: 28px; 
-        color: var(--text-color); 
-        margin: 20px 0;
-        padding: 10px;
-        font-weight: bold; 
-        z-index: 9999;
-        text-shadow: 2px 2px 4px rgba(255,255,255,0.8); /* Мягкое свечение вокруг букв */
-        text-align: center;
+#status { 
+        position: fixed; /* Фиксируем сверху */
+        top: 20px;
+        left: 0;
         width: 100%;
-        position: relative;
-        background: transparent; /* УБРАЛИ ПОДЛОЖКУ */
+        font-size: 32px; 
+        color: var(--text-color); 
+        font-weight: bold; 
+        z-index: 10000; /* Выше всего */
+        text-shadow: 2px 2px 5px white; 
+        text-align: center;
+        background: transparent;
+        pointer-events: none; /* Чтобы не мешал кликать по доске */
     }
 
         @media (max-width: 600px) {
@@ -268,7 +269,9 @@
         }
 
         // Стартовый запуск
-        updateStatusDisplay();;
+       setTimeout(() => {
+            updateStatusDisplay();
+        }, 100);
     </script>
 </body>
 </html>
