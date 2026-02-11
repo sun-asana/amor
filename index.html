@@ -107,11 +107,11 @@
         document.documentElement.style.setProperty('--grid-color', '#' + gc);
 
         // 2. УСТАНОВКА КУРСОРОВ (из папки assets)
-        const cursors = {
-            'amor': 'assets/cursor-amor.png',
-            'heart': 'assets/cursor-heart.png',
-            'star': 'assets/cursor-star.png'
-        };
+const cursors = {
+    'amor': 'assets/cursor-amor.png',
+    'heart': 'assets/cursor-heart.png',
+    'arrow': 'assets/cursor-arrow.png'
+};
         const curType = p.get('cur') || 'amor';
         document.getElementById('custom-cursor').src = cursors[curType] || cursors['amor'];
         
