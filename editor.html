@@ -71,10 +71,10 @@
 
         /* ПРАВАЯ ПАНЕЛЬ С ПРЕДПРОСМОТРОМ */
         .preview-side { 
-            flex: 1; 
-            position: sticky; 
-            top: 20px; 
-        }
+    flex: 1.5; /* Сделали панель превью чуть шире */
+    position: sticky; 
+    top: 20px; 
+}
 
         .preview-container {
             width: 100%;
@@ -91,13 +91,13 @@
             line-height: 0; /* Убирает лишний отступ снизу у iframe */
         }
 
-        #preview-frame {
+#preview-frame {
     width: 100%;
-    aspect-ratio: 4 / 3; 
+    aspect-ratio: 16 / 9; /* ТЕПЕРЬ КАК В GENIALLY */
     border: none;
     border-radius: 20px;
     background: #fff;
-    overflow: hidden; /* Можно попробовать поставить scroll, если текст выше экрана */
+    display: block;
 }
 
         textarea {
