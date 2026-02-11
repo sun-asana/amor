@@ -92,12 +92,13 @@
         }
 
         #preview-frame {
-            width: 100%;
-            aspect-ratio: 4 / 3; /* ПРОПОРЦИИ КАК В GENIALLY */
-            border: none;
-            border-radius: 20px;
-            background: #fff;
-        }
+    width: 100%;
+    aspect-ratio: 4 / 3; 
+    border: none;
+    border-radius: 20px;
+    background: #fff;
+    overflow: hidden; /* Можно попробовать поставить scroll, если текст выше экрана */
+}
 
         textarea {
             width: 100%; height: 80px; margin-top: 10px; border-radius: 15px;
