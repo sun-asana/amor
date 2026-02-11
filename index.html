@@ -89,17 +89,18 @@
         #q-img { max-width: 100%; max-height: 200px; border-radius: 15px; margin-bottom: 10px; display: none; }
         .btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; margin-top: 10px; font-weight: bold;}
         
-     #status { 
+    #status { 
     font-size: 26px; 
     color: var(--text-color); 
-    margin: 0;
-    padding: 15px 0;      /* Четкий отступ сверху */
+    margin: 10px 0;
+    padding: 10px;
     font-weight: bold; 
-    z-index: 100; 
+    z-index: 9999; /* Вытаскиваем на самый верх */
     text-shadow: 1px 1px 5px white; 
     text-align: center;
-    min-height: 1.2em;
     width: 100%;
+    position: relative; /* Важно для z-index */
+    background: rgba(255,255,255,0.5); /* Добавим подложку, чтобы точно увидеть */
 }
 
         @media (max-width: 600px) {
@@ -182,9 +183,6 @@
                 setTimeout(() => part.remove(), 1200);
             }
         });
-
-        const status = document.getElementById('status');
-        status.innerText = "Ход: " + t1.name;
 
         // Создание ячеек
         for(let i=0; i<9; i++) {
@@ -276,9 +274,16 @@
 
       // --- САМОНАСТРОЙКА ПРИ ЗАГРУЗКЕ ---
         function updateStatus() {
-            const team1Name = p.get('t1') || "Команда 1";
-            status.innerText = "Ход: " + team1Name;
-        }
+    const team1Name = p.get('t1') || "Команда 1";
+    console.log("Пытаюсь обновить статус на:", team1Name); // Это появится в консоли (F12)
+    const el = document.getElementById('status');
+    if (el) {
+        el.style.border = "5px solid red"; // Рисуем красную рамку вокруг текста
+        el.innerText = "ХОД: " + team1Name;
+    } else {
+        alert("Элемент status не найден на странице!");
+    }
+}
 
         // Запускаем сразу и на всякий случай через 50мс
         updateStatus();
