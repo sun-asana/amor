@@ -126,7 +126,8 @@
     <img id="custom-cursor" src="">
 
     <script>
-        const p = new URLSearchParams(window.location.search);
+     const p = new URLSearchParams(window.location.search);
+        const status = document.getElementById('status'); // ВОТ ЭТА СТРОЧКА БЫЛА НУЖНА!
 
         // Настройки шрифта и цветов
         const selectedFont = p.get('font');
@@ -184,6 +185,15 @@
             }
         });
 
+        // Функция обновления текста
+        function updateStatusDisplay() {
+            if (status) {
+                status.style.border = "none"; // Убираем красный забор
+                status.style.background = "transparent"; // Убираем белую полосу
+                status.innerText = "Ход: " + (cur === 1 ? t1.name : t2.name);
+            }
+        }
+
         // Создание ячеек
         for(let i=0; i<9; i++) {
             const cell = document.createElement('div');
@@ -211,8 +221,6 @@
             board.appendChild(cell);
         }
 
-        // --- ЛОГИКА ИГРЫ ---
-
         function check() {
             const userAns = document.getElementById('ans-input').value.toLowerCase().trim();
             const correctAns = (window.currentQ.a || "").toLowerCase().trim();
@@ -226,7 +234,7 @@
                     board.style.pointerEvents = 'none';
                     launchCelebrate();
                 } else if (Array.from(board.children).every(c => c.innerText !== "")) {
-                    status.innerHTML = "🤝 <span style='font-size: 1.2em;'>НИЧЬЯ!</span><br>Победила дружба и Амур! 💖";
+                    status.innerHTML = "🤝 <span style='font-size: 1.2em;'>НИЧЬЯ!</span><br>Победила дружба! 💖";
                     board.style.pointerEvents = 'none';
                 } else {
                     switchPlayer();
@@ -240,7 +248,7 @@
 
         function switchPlayer() {
             cur = cur === 1 ? 2 : 1;
-            status.innerText = "Ход: " + (cur === 1 ? t1.name : t2.name);
+            updateStatusDisplay();
         }
 
         function checkWin() {
@@ -252,42 +260,15 @@
         function launchCelebrate() {
             const end = Date.now() + 5000;
             const mainColor = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
-            
             (function frame() {
-                confetti({ 
-                    particleCount: 7, 
-                    angle: 60, 
-                    spread: 55, 
-                    origin: { x: 0 }, 
-                    colors: [mainColor, '#ffffff', '#ffb3c1'] 
-                });
-                confetti({ 
-                    particleCount: 7, 
-                    angle: 120, 
-                    spread: 55, 
-                    origin: { x: 1 }, 
-                    colors: [mainColor, '#ffffff', '#ffb3c1'] 
-                });
+                confetti({ particleCount: 7, angle: 60, spread: 55, origin: { x: 0 }, colors: [mainColor, '#ffffff', '#ffb3c1'] });
+                confetti({ particleCount: 7, angle: 120, spread: 55, origin: { x: 1 }, colors: [mainColor, '#ffffff', '#ffb3c1'] });
                 if (Date.now() < end) requestAnimationFrame(frame);
             }());
         }
 
-      // --- САМОНАСТРОЙКА ПРИ ЗАГРУЗКЕ ---
-        function updateStatus() {
-    const team1Name = p.get('t1') || "Команда 1";
-    console.log("Пытаюсь обновить статус на:", team1Name); // Это появится в консоли (F12)
-    const el = document.getElementById('status');
-    if (el) {
-        el.style.border = "5px solid red"; // Рисуем красную рамку вокруг текста
-        el.innerText = "ХОД: " + team1Name;
-    } else {
-        alert("Элемент status не найден на странице!");
-    }
-}
-
-        // Запускаем сразу и на всякий случай через 50мс
-        updateStatus();
-        window.addEventListener('load', updateStatus);
+        // Стартовый запуск
+        updateStatusDisplay();;
     </script>
 </body>
 </html>
