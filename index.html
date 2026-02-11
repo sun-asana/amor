@@ -22,34 +22,35 @@
             background-size: cover;
         }
 
-       /* Замени старый блок .board и стили сеток на этот вариант */
-.board { 
-    display: grid; 
-    grid-template-columns: repeat(3, 150px); 
-    grid-template-rows: repeat(3, 150px); 
-    gap: 20px; 
-    z-index: 10; 
-    position: relative;
-    width: 490px;
-    height: 490px;
-}
+        .board { 
+            display: grid; 
+            grid-template-columns: repeat(3, 150px); 
+            grid-template-rows: repeat(3, 150px); 
+            gap: 20px; 
+            z-index: 10; 
+            position: relative;
+            width: 490px;
+            height: 490px;
+            /* Фикс для адаптивности */
+            max-width: 95vw;
+            max-height: 70vh;
+        }
 
-.board::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    z-index: -1; /* Сетка уходит на слой НИЖЕ символов */
-    background-color: var(--grid-color);
-    -webkit-mask-size: 100% 100%;
-    mask-size: 100% 100%;
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-}
+        .board::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+            background-color: var(--grid-color);
+            -webkit-mask-size: 100% 100%;
+            mask-size: 100% 100%;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+        }
 
-/* Теперь классы сеток вешаем на маску псевдоэлемента */
-.grid-hearts::before { -webkit-mask-image: url('assets/grid-hearts.svg'); mask-image: url('assets/grid-hearts.svg'); }
-.grid-dots::before { -webkit-mask-image: url('assets/grid-dots.svg'); mask-image: url('assets/grid-dots.svg'); }
-.grid-neon::before { -webkit-mask-image: url('assets/grid-neon.svg'); mask-image: url('assets/grid-neon.svg'); }
+        .grid-hearts::before { -webkit-mask-image: url('assets/grid-hearts.svg'); mask-image: url('assets/grid-hearts.svg'); }
+        .grid-dots::before { -webkit-mask-image: url('assets/grid-dots.svg'); mask-image: url('assets/grid-dots.svg'); }
+        .grid-neon::before { -webkit-mask-image: url('assets/grid-neon.svg'); mask-image: url('assets/grid-neon.svg'); }
         
         .cell {
             width: 150px; 
@@ -87,6 +88,17 @@
         #q-img { max-width: 100%; max-height: 200px; border-radius: 15px; margin-bottom: 10px; display: none; }
         .btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; margin-top: 10px; font-weight: bold;}
         #status { font-size: 24px; color: var(--primary); margin-bottom: 20px; font-weight: bold; z-index: 10; text-shadow: 1px 1px 5px white; }
+
+        /* --- БЛОК АДАПТИВНОСТИ ДЛЯ ПРЕДПРОСМОТРА --- */
+        @media (max-width: 600px) {
+            body { justify-content: center; }
+            .board {
+                transform: scale(0.6); 
+                transform-origin: center center;
+                margin: -80px 0; 
+            }
+            #status { font-size: 18px; }
+        }
     </style>
 </head>
 <body id="main-body">
@@ -106,20 +118,16 @@
     <img id="custom-cursor" src="">
 
     <script>
-        // ЧИТАЕМ ПАРАМЕТРЫ
         const p = new URLSearchParams(window.location.search);
 
-        // 2. ПРИМЕНЯЕМ ВЫБРАННЫЙ ШРИФТ
         const selectedFont = p.get('font');
         if (selectedFont) {
             document.body.style.fontFamily = selectedFont;
         }
 
-        // ПРИМЕНЯЕМ ЦВЕТ СЕТКИ
         const gc = p.get('gc') || 'ff4d6d';
         document.documentElement.style.setProperty('--grid-color', '#' + gc);
 
-        // УСТАНОВКА КУРСОРОВ
         const cursors = {
             'amor': 'assets/cursor-amor.png',
             'heart': 'assets/cursor-heart.png',
@@ -128,7 +136,6 @@
         const curType = p.get('cur') || 'amor';
         document.getElementById('custom-cursor').src = cursors[curType] || cursors['amor'];
         
-        // УСТАНОВКА ФОНА
         const bgParam = p.get('bg') || 'none';
         const mainBody = document.getElementById('main-body');
         if (bgParam === 'none') {
@@ -140,11 +147,9 @@
             mainBody.style.backgroundPosition = 'center';
         }
 
-        // СЕТКА
         const board = document.getElementById('board');
         board.classList.add('grid-' + (p.get('grid') || 'hearts'));
 
-        // 3. ОБНОВЛЕННЫЕ КОМАНДЫ (принимают символ из редактора)
         const t1 = { 
             name: p.get('t1') || "Команда 1", 
             sym: p.get('s1') || "❤️" 
@@ -155,7 +160,6 @@
         };
         let cur = 1;
 
-        // МАГИЧЕСКАЯ ПЫЛЬЦА
         document.addEventListener('mousemove', (e) => {
             const c = document.getElementById('custom-cursor');
             c.style.left = e.clientX + 'px'; c.style.top = e.clientY + 'px';
@@ -171,7 +175,6 @@
             }
         });
 
-        // СОЗДАНИЕ КЛЕТОК
         const status = document.getElementById('status');
         status.innerText = "Ход: " + t1.name;
 
