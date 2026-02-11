@@ -16,7 +16,6 @@
             align-items: flex-start; 
         }
 
-        /* ЛЕВАЯ ПАНЕЛЬ */
         .editor-side { 
             flex: 1.3; background: white; padding: 30px; 
             border-radius: 35px; box-shadow: 0 15px 40px rgba(255, 77, 109, 0.1); 
@@ -43,11 +42,9 @@
 
         select:focus, input:focus { border-color: var(--primary); }
 
-        /* ЦВЕТОВАЯ ПАЛИТРА */
         .color-group { display: flex; align-items: center; gap: 10px; background: white; padding: 5px 15px; border-radius: 15px; border: 2px solid #ffdae0; }
         input[type="color"] { border: none; width: 35px; height: 35px; cursor: pointer; background: none; }
 
-        /* СЕТКА ВОПРОСОВ */
         .q-row { 
             display: grid; grid-template-columns: 1fr 1fr 1.2fr; 
             gap: 10px; margin-bottom: 10px; 
@@ -63,7 +60,6 @@
 
         .preview-img-mini { max-height: 35px; border-radius: 8px; margin-right: 8px; display: none; }
 
-        /* КНОПКА */
         button { 
             background: var(--primary); color: white; border: none; 
             padding: 18px; border-radius: 50px; cursor: pointer; 
@@ -72,7 +68,6 @@
         }
         button:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(255, 77, 109, 0.4); }
 
-        /* ПРАВАЯ ПАНЕЛЬ (ПРЕДПРОСМОТР) */
         .preview-side { flex: 1; position: sticky; top: 20px; text-align: center; }
         
         #preview-container { 
@@ -108,11 +103,17 @@
                 </div>
             </div>
             <div class="flex-row">
-<select id="cur-select">
-    <option value="amor">Курсор: Амурчик 👼</option>
-    <option value="heart">Курсор: Сердечко ❤️</option>
-    <option value="arrow">Курсор: Стрела Амура 🏹</option>
-</select>
+                <select id="cur-select">
+                    <option value="amor">Курсор: Амурчик 👼</option>
+                    <option value="heart">Курсор: Сердечко ❤️</option>
+                    <option value="arrow">Курсор: Стрела Амура 🏹</option>
+                </select>
+                <select id="bg-select">
+                    <option value="none">✨ Без фона (прозрачный)</option>
+                    <option value="romance">Фон: Романтика 🌸</option>
+                    <option value="science">Фон: Наука 🧪</option>
+                    <option value="modern">Фон: Модерн ✨</option>
+                </select>
             </div>
         </div>
 
@@ -151,7 +152,6 @@
     const gridContainer = document.getElementById('questions-grid');
     const imagesData = {};
 
-    // Генерируем 9 строк для вопросов
     for (let i = 1; i <= 9; i++) {
         gridContainer.innerHTML += `
             <div class="q-row">
@@ -166,7 +166,6 @@
             </div>`;
     }
 
-    // Обработка загрузки картинок
     function processFile(file, index) {
         if (!file) return;
         const reader = new FileReader();
@@ -186,7 +185,6 @@
         if (ev.dataTransfer.files) processFile(ev.dataTransfer.files[0], index);
     }
 
-    // ГЕНЕРАЦИЯ ССЫЛКИ
     function generate() {
         const baseUrl = "index.html"; 
         let params = new URLSearchParams();
@@ -197,11 +195,9 @@
         params.set('t1', document.getElementById('t1').value || "Команда 1");
         params.set('t2', document.getElementById('t2').value || "Команда 2");
         
-        // Цвет без решетки
         const colorValue = document.getElementById('grid-color').value.substring(1);
         params.set('gc', colorValue);
 
-        // Собираем вопросы
         for (let i = 1; i <= 9; i++) {
             const q = document.getElementById('q'+i).value || "";
             const a = document.getElementById('a'+i).value || "";
@@ -211,12 +207,17 @@
 
         const finalUrl = baseUrl + "?" + params.toString();
         
-        // Обновляем фрейм
+        // ВОТ ТУТ ТВОЯ МАГИЯ:
+        // 1. Обновляем превью справа
         document.getElementById('preview-frame').src = finalUrl;
         
-        // Генерируем код для вставки
+        // 2. Делаем ссылку для Genially
         const fullUrl = window.location.href.replace('editor.html', '') + finalUrl;
-        document.getElementById('code-box').value = `<iframe src="${fullUrl}" width="800" height="600" frameborder="0" allowfullscreen></iframe>`;
+        
+        // 3. Формируем код с прозрачностью (allowtransparency="true")
+        document.getElementById('code-box').value = `<iframe src="${fullUrl}" width="800" height="600" frameborder="0" allowtransparency="true" allowfullscreen></iframe>`;
+        
+        // 4. Показываем результат
         document.getElementById('result-box').style.display = 'block';
     }
 </script>
