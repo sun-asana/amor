@@ -44,7 +44,7 @@
         select:focus, input:focus { border-color: var(--primary); }
 
         .color-group { display: flex; align-items: center; gap: 10px; background: white; padding: 5px 15px; border-radius: 15px; border: 2px solid #ffdae0; }
-        input[type="color"] { border: none; width: 35px; height: 35px; cursor: pointer; background: none; }
+        input[type="color"] { border: none; width: 30px; height: 30px; cursor: pointer; background: none; padding: 0; }
 
         .q-row { 
             display: grid; grid-template-columns: 1fr 1fr 1.2fr; 
@@ -69,27 +69,39 @@
         }
         button:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(255, 77, 109, 0.4); }
 
-        .preview-side { flex: 1; position: sticky; top: 20px; text-align: center; }
-        
-        #preview-container { 
-            width: 100%; 
-            height: 500px; 
-            border: 12px solid white; 
-            border-radius: 30px; 
-            overflow: hidden; 
-            box-shadow: 0 30px 60px rgba(0,0,0,0.15); 
-            background: #eee;
-        }
-        iframe { width: 100%; height: 100%; border: none; }
-
-        textarea { 
-            width: 100%; height: 100px; margin-top: 15px; border-radius: 15px; 
-            border: 1px solid #ddd; padding: 15px; font-size: 12px; color: #666; resize: none;
+        /* ПРАВАЯ ПАНЕЛЬ С ПРЕДПРОСМОТРОМ */
+        .preview-side { 
+            flex: 1; 
+            position: sticky; 
+            top: 20px; 
         }
 
-        .copy-btn {
-            width: auto; padding: 8px 15px; font-size: 12px; margin: 0;
-            background: var(--primary); border-radius: 10px;
+        .preview-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .preview-wrapper {
+            background: white;
+            padding: 10px;
+            border-radius: 30px;
+            border: 8px solid white;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            line-height: 0; /* Убирает лишний отступ снизу у iframe */
+        }
+
+        #preview-frame {
+            width: 100%;
+            aspect-ratio: 4 / 3; /* ПРОПОРЦИИ КАК В GENIALLY */
+            border: none;
+            border-radius: 20px;
+            background: #fff;
+        }
+
+        textarea {
+            width: 100%; height: 80px; margin-top: 10px; border-radius: 15px;
+            border: 2px solid #ffdae0; padding: 10px; font-family: monospace; font-size: 11px;
         }
     </style>
 </head>
@@ -108,8 +120,12 @@
                     <option value="neon">Сетка: Неон 💡</option>
                 </select>
                 <div class="color-group">
-                    <span style="font-size: 12px; color: #888;">Цвет:</span>
+                    <span style="font-size: 11px; color: #888;">Сетка:</span>
                     <input type="color" id="grid-color" value="#ff4d6d">
+                </div>
+                <div class="color-group">
+                    <span style="font-size: 11px; color: #888;">Текст:</span>
+                    <input type="color" id="text-color" value="#ff4d6d">
                 </div>
             </div>
             <div class="flex-row">
@@ -173,19 +189,21 @@
         <div id="result-box" style="display:none; margin-top:20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <span style="font-size: 12px; color: #888; font-weight: bold;">Код для вставки в Genially:</span>
-                <button id="copy-btn" onclick="copyCode()" class="copy-btn">Копировать 📋</button>
+                <button id="copy-btn" onclick="copyCode()" style="padding: 5px 15px; width: auto; font-size: 12px;">Копировать 📋</button>
             </div>
             <textarea id="code-box" readonly></textarea>
         </div>
     </div>
 
     <div class="preview-side">
-        <div id="preview-container">
-            <iframe id="preview-frame" src="about:blank"></iframe>
+        <div class="preview-container">
+            <div class="preview-wrapper">
+                <iframe id="preview-frame" src="about:blank"></iframe>
+            </div>
+            <p style="color: var(--primary); font-weight: bold; margin-top: 15px; text-align: center;">
+                ✨ Так игра выглядит прямо сейчас
+            </p>
         </div>
-        <p style="color: var(--primary); font-weight: bold; margin-top: 15px;">
-            ✨ Так игра выглядит прямо сейчас
-        </p>
     </div>
 </div>
 
@@ -230,22 +248,20 @@
         const baseUrl = "index.html"; 
         let params = new URLSearchParams();
         
-        // Настройки визуала
         params.set('grid', document.getElementById('grid-select').value);
         params.set('cur', document.getElementById('cur-select').value);
         params.set('bg', document.getElementById('bg-select').value);
-        params.set('font', document.getElementById('font-select').value); // ПЕРЕДАЕМ ШРИФТ
+        params.set('font', document.getElementById('font-select').value);
         
-        const colorValue = document.getElementById('grid-color').value.substring(1);
-        params.set('gc', colorValue);
+        // Цвета (убираем #)
+        params.set('gc', document.getElementById('grid-color').value.substring(1));
+        params.set('tc', document.getElementById('text-color').value.substring(1));
 
-        // Команды
         params.set('t1', document.getElementById('t1').value || "Команда 1");
         params.set('s1', document.getElementById('s1').value); 
         params.set('t2', document.getElementById('t2').value || "Команда 2");
         params.set('s2', document.getElementById('s2').value);
 
-        // Вопросы
         for (let i = 1; i <= 9; i++) {
             const q = document.getElementById('q'+i).value || "";
             const a = document.getElementById('a'+i).value || "";
@@ -264,19 +280,10 @@
     function copyCode() {
         const codeBox = document.getElementById('code-box');
         const btn = document.getElementById('copy-btn');
-        
         codeBox.select();
-        codeBox.setSelectionRange(0, 99999);
         navigator.clipboard.writeText(codeBox.value);
-
-        const originalText = btn.innerText;
         btn.innerText = "Скопировано! ✅";
-        btn.style.background = "#4CAF50";
-
-        setTimeout(() => {
-            btn.innerText = originalText;
-            btn.style.background = "#ff4d6d";
-        }, 2000);
+        setTimeout(() => { btn.innerText = "Копировать 📋"; }, 2000);
     }
 </script>
 </body>
