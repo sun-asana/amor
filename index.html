@@ -22,7 +22,8 @@
             background-size: cover;
         }
 
-       .board { 
+       /* Замени старый блок .board и стили сеток на этот вариант */
+.board { 
     display: grid; 
     grid-template-columns: repeat(3, 150px); 
     grid-template-rows: repeat(3, 150px); 
@@ -31,14 +32,24 @@
     position: relative;
     width: 490px;
     height: 490px;
-    /* Убрали mask, используем background */
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
 }
 
-        .grid-hearts { background-image: url('assets/grid-hearts.svg'); }
-.grid-dots { background-image: url('assets/grid-dots.svg'); }
-.grid-neon { background-image: url('assets/grid-neon.svg'); }
+.board::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: -1; /* Сетка уходит на слой НИЖЕ символов */
+    background-color: var(--grid-color);
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+}
+
+/* Теперь классы сеток вешаем на маску псевдоэлемента */
+.grid-hearts::before { -webkit-mask-image: url('assets/grid-hearts.svg'); mask-image: url('assets/grid-hearts.svg'); }
+.grid-dots::before { -webkit-mask-image: url('assets/grid-dots.svg'); mask-image: url('assets/grid-dots.svg'); }
+.grid-neon::before { -webkit-mask-image: url('assets/grid-neon.svg'); mask-image: url('assets/grid-neon.svg'); }
         
         .cell {
             width: 150px; 
