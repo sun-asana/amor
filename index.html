@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Amor Engine Final</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Kelly+Slab&family=Lobster&family=Marck+Script&family=Pacifico&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         :root {
             --primary: #ff4d6d;
-            /* Цвет сетки по умолчанию */
             --grid-color: #ff4d6d;
         }
 
@@ -17,7 +18,6 @@
             align-items: center; justify-content: center;
             font-family: 'Segoe UI', sans-serif; overflow: hidden; cursor: none;
             transition: background 0.5s;
-            /* Стандартный фон, если параметр не передан */
             background: linear-gradient(135deg, #fff0f5, #ffdee9);
             background-size: cover;
         }
@@ -31,7 +31,6 @@
             position: relative;
             width: 490px;
             height: 490px;
-            
             -webkit-mask-size: 100% 100%;
             mask-size: 100% 100%;
             -webkit-mask-repeat: no-repeat;
@@ -39,7 +38,6 @@
             background-color: var(--grid-color); 
         }
 
-        /* ЭТИ ТРИ СТРОЧКИ ОБЯЗАТЕЛЬНО ОСТАВЬ: */
         .grid-hearts { -webkit-mask-image: url('assets/grid-hearts.svg'); mask-image: url('assets/grid-hearts.svg'); }
         .grid-dots { -webkit-mask-image: url('assets/grid-dots.svg'); mask-image: url('assets/grid-dots.svg'); }
         .grid-neon { -webkit-mask-image: url('assets/grid-neon.svg'); mask-image: url('assets/grid-neon.svg'); }
@@ -99,45 +97,56 @@
     <img id="custom-cursor" src="">
 
     <script>
+        // ЧИТАЕМ ПАРАМЕТРЫ
         const p = new URLSearchParams(window.location.search);
 
-        // 1. ПРИМЕНЯЕМ ЦВЕТ СЕТКИ
+        // 2. ПРИМЕНЯЕМ ВЫБРАННЫЙ ШРИФТ
+        const selectedFont = p.get('font');
+        if (selectedFont) {
+            document.body.style.fontFamily = selectedFont;
+        }
+
+        // ПРИМЕНЯЕМ ЦВЕТ СЕТКИ
         const gc = p.get('gc') || 'ff4d6d';
         document.documentElement.style.setProperty('--grid-color', '#' + gc);
 
-        // 2. УСТАНОВКА КУРСОРОВ (из папки assets)
-const cursors = {
-    'amor': 'assets/cursor-amor.png',
-    'heart': 'assets/cursor-heart.png',
-    'arrow': 'assets/cursor-arrow.png'
-};
+        // УСТАНОВКА КУРСОРОВ
+        const cursors = {
+            'amor': 'assets/cursor-amor.png',
+            'heart': 'assets/cursor-heart.png',
+            'arrow': 'assets/cursor-arrow.png'
+        };
         const curType = p.get('cur') || 'amor';
         document.getElementById('custom-cursor').src = cursors[curType] || cursors['amor'];
         
-       // 3. УСТАНОВКА ФОНА
-const bgParam = p.get('bg') || 'none';
-const mainBody = document.getElementById('main-body');
+        // УСТАНОВКА ФОНА
+        const bgParam = p.get('bg') || 'none';
+        const mainBody = document.getElementById('main-body');
+        if (bgParam === 'none') {
+            mainBody.style.background = 'transparent';
+            document.documentElement.style.background = 'transparent';
+        } else {
+            mainBody.style.backgroundImage = `url('assets/bg-${bgParam}.jpg')`;
+            mainBody.style.backgroundSize = 'cover';
+            mainBody.style.backgroundPosition = 'center';
+        }
 
-if (bgParam === 'none') {
-    mainBody.style.background = 'transparent';
-    document.documentElement.style.background = 'transparent';
-} else {
-    // Если параметр — это число 1-6, подставляем его в путь к файлу
-    mainBody.style.backgroundImage = `url('assets/bg-${bgParam}.jpg')`;
-    mainBody.style.backgroundSize = 'cover';
-    mainBody.style.backgroundPosition = 'center';
-}
-
-        // 4. СЕТКА
+        // СЕТКА
         const board = document.getElementById('board');
         board.classList.add('grid-' + (p.get('grid') || 'hearts'));
 
-        // 5. КОМАНДЫ И ХОДЫ
-        const t1 = { name: p.get('t1') || "Команда 1", sym: "❤️" };
-        const t2 = { name: p.get('t2') || "Команда 2", sym: "✉️" };
+        // 3. ОБНОВЛЕННЫЕ КОМАНДЫ (принимают символ из редактора)
+        const t1 = { 
+            name: p.get('t1') || "Команда 1", 
+            sym: p.get('s1') || "❤️" 
+        };
+        const t2 = { 
+            name: p.get('t2') || "Команда 2", 
+            sym: p.get('s2') || "✉️" 
+        };
         let cur = 1;
 
-        // 6. МАГИЧЕСКАЯ ПЫЛЬЦА
+        // МАГИЧЕСКАЯ ПЫЛЬЦА
         document.addEventListener('mousemove', (e) => {
             const c = document.getElementById('custom-cursor');
             c.style.left = e.clientX + 'px'; c.style.top = e.clientY + 'px';
@@ -153,7 +162,7 @@ if (bgParam === 'none') {
             }
         });
 
-        // 7. СОЗДАНИЕ КЛЕТОК
+        // СОЗДАНИЕ КЛЕТОК
         const status = document.getElementById('status');
         status.innerText = "Ход: " + t1.name;
 
