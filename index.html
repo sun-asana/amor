@@ -90,18 +90,18 @@
         .btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; margin-top: 10px; font-weight: bold;}
         
     #status { 
-    font-size: 26px; 
-    color: var(--text-color); 
-    margin: 10px 0;
-    padding: 10px;
-    font-weight: bold; 
-    z-index: 9999; /* Вытаскиваем на самый верх */
-    text-shadow: 1px 1px 5px white; 
-    text-align: center;
-    width: 100%;
-    position: relative; /* Важно для z-index */
-    background: rgba(255,255,255,0.5); /* Добавим подложку, чтобы точно увидеть */
-}
+        font-size: 28px; 
+        color: var(--text-color); 
+        margin: 20px 0;
+        padding: 10px;
+        font-weight: bold; 
+        z-index: 9999;
+        text-shadow: 2px 2px 4px rgba(255,255,255,0.8); /* Мягкое свечение вокруг букв */
+        text-align: center;
+        width: 100%;
+        position: relative;
+        background: transparent; /* УБРАЛИ ПОДЛОЖКУ */
+    }
 
         @media (max-width: 600px) {
             .board { transform: scale(0.6); transform-origin: center center; }
