@@ -8,7 +8,8 @@
     <style>
         :root {
             --primary: #ff4d6d;
-            --neon-shadow: 0 0 10px #ff4d6d, 0 0 20px #ff4d6d;
+            /* Цвет сетки по умолчанию */
+            --grid-color: #ff4d6d;
         }
 
         body {
@@ -16,9 +17,11 @@
             align-items: center; justify-content: center;
             font-family: 'Segoe UI', sans-serif; overflow: hidden; cursor: none;
             transition: background 0.5s;
+            /* Стандартный фон, если параметр не передан */
+            background: linear-gradient(135deg, #fff0f5, #ffdee9);
+            background-size: cover;
         }
 
-       /* --- ИСПРАВЛЕННАЯ СЕТКА (ВСТАВЛЯТЬ СЮДА) --- */
         .board { 
             display: grid; 
             grid-template-columns: repeat(3, 110px); 
@@ -26,103 +29,63 @@
             gap: 15px; 
             z-index: 10; 
             position: relative;
-            width: 360px; /* Фиксированная ширина для стабильности */
+            width: 360px;
             height: 360px;
+            
+            /* Магия SVG-трафарета */
+            -webkit-mask-size: 100% 100%;
+            mask-size: 100% 100%;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+
+            /* Цвет сетки берется из переменной */
+            background-color: var(--grid-color); 
         }
 
-        .board::before, .board::after {
-            content: '';
-            position: absolute;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-       /* 1. СЕТКА ИЗ СЕРДЕЧЕК — МЕТОД BACKGROUND REPEAT */
-        .grid-hearts::before {
-            content: '';
-            position: absolute;
-            left: 110px; top: 0; bottom: 0; width: 140px;
-            z-index: -1;
-            /* Используем фон вместо рамки */
-            background-image: url('https://cdn-icons-png.flaticon.com/512/833/833472.png'), 
-                              url('https://cdn-icons-png.flaticon.com/512/833/833472.png');
-            background-position: left center, right center;
-            background-repeat: repeat-y; /* Повторяем только по вертикали */
-            background-size: 20px; /* Размер одного сердечка */
-        }
-
-        .grid-hearts::after {
-            content: '';
-            position: absolute;
-            top: 110px; left: 0; right: 0; height: 140px;
-            z-index: -1;
-            background-image: url('https://cdn-icons-png.flaticon.com/512/833/833472.png'), 
-                              url('https://cdn-icons-png.flaticon.com/512/833/833472.png');
-            background-position: center top, center bottom;
-            background-repeat: repeat-x; /* Повторяем только по горизонтали */
-            background-size: 20px;
-        }
-
-        /* 2. СЕТКА ПУНКТИРОМ */
-        .grid-dots::before {
-            left: 110px; width: 140px; top: 0; bottom: 0;
-            border-left: 3px dashed var(--primary); border-right: 3px dashed var(--primary);
-        }
-        .grid-dots::after {
-            top: 110px; height: 140px; left: 0; right: 0;
-            border-top: 3px dashed var(--primary); border-bottom: 3px dashed var(--primary);
-        }
-
-        /* 3. СЕТКА НЕОНОВАЯ */
-        .grid-neon::before {
-            left: 110px; width: 140px; top: 0; bottom: 0;
-            border-left: 2px solid #fff; border-right: 2px solid #fff;
-            filter: drop-shadow(0 0 10px var(--primary));
-        }
-        .grid-neon::after {
-            top: 110px; height: 140px; left: 0; right: 0;
-            border-top: 2px solid #fff; border-bottom: 2px solid #fff;
-            filter: drop-shadow(0 0 10px var(--primary));
-        }
-        /* --- КОНЕЦ БЛОКА СЕТКИ --- */
+        /* Классы для выбора маски (твои SVG в папке assets) */
+        .grid-hearts { -webkit-mask-image: url('assets/grid-hearts.svg'); mask-image: url('assets/grid-hearts.svg'); }
+        .grid-dots { -webkit-mask-image: url('assets/grid-dots.svg'); mask-image: url('assets/grid-dots.svg'); }
+        .grid-neon { -webkit-mask-image: url('assets/grid-neon.svg'); mask-image: url('assets/grid-neon.svg'); }
        
         .cell {
             width: 110px; height: 110px;
             display: flex; align-items: center; justify-content: center;
             font-size: 50px; transition: all 0.3s ease; 
-            background: transparent; /* Прозрачные ячейки для стиля как на скриншоте */
+            background: transparent;
             cursor: none;
+            user-select: none;
         }
 
-        /* КУРСОР И ПЫЛЬЦА */
         #custom-cursor {
             position: fixed; width: 60px; pointer-events: none; z-index: 9999;
-            transform: translate(-50%, -50%); filter: drop-shadow(0 0 5px gold);
+            transform: translate(-50%, -50%);
         }
+
         .particle {
             position: fixed; pointer-events: none; z-index: 9998;
             font-size: 10px; animation: magic 1.5s forwards;
-            text-shadow: 0 0 5px white, 0 0 10px var(--primary);
+            text-shadow: 0 0 5px white;
         }
+
         @keyframes magic {
             0% { transform: translate(0,0) scale(1) rotate(0deg); opacity: 1; }
             100% { transform: translate(var(--dx), var(--dy)) scale(0) rotate(360deg); opacity: 0; }
         }
 
-        /* МОДАЛЬНОЕ ОКНО */
         #modal {
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: white; padding: 30px; border-radius: 30px; z-index: 100;
             box-shadow: 0 20px 50px rgba(0,0,0,0.3); text-align: center; width: 320px;
         }
-        #q-img { max-width: 100%; border-radius: 15px; margin-bottom: 10px; display: none; }
+
+        #q-img { max-width: 100%; max-height: 200px; border-radius: 15px; margin-bottom: 10px; display: none; }
         .btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; margin-top: 10px; font-weight: bold;}
         #status { font-size: 24px; color: var(--primary); margin-bottom: 20px; font-weight: bold; z-index: 10; text-shadow: 1px 1px 5px white; }
     </style>
 </head>
 <body id="main-body">
 
-    <div id="status"></div>
+    <div id="status">Загрузка...</div>
     <div id="board" class="board"></div>
 
     <div id="modal">
@@ -139,47 +102,56 @@
     <script>
         const p = new URLSearchParams(window.location.search);
 
-        // Установка курсора
-        document.getElementById('custom-cursor').src = p.get('cur') || 'https://cdn-icons-png.flaticon.com/512/3588/3588640.png';
-        
-        // 1. Фон
-        const bgs = {
-            'romance': 'linear-gradient(135deg, #fff0f5, #ffdee9)',
-            'science': 'radial-gradient(circle, #ffffff 0%, #ffdee9 100%)',
-            'modern': '#ffb3c1'
-        };
-        document.getElementById('main-body').style.background = bgs[p.get('bg')] || bgs['romance'];
+        // 1. ПРИМЕНЯЕМ ЦВЕТ СЕТКИ
+        const gc = p.get('gc') || 'ff4d6d';
+        document.documentElement.style.setProperty('--grid-color', '#' + gc);
 
-        // 2. Сетка
+        // 2. УСТАНОВКА КУРСОРОВ (из папки assets)
+        const cursors = {
+            'amor': 'assets/cursor-amor.png',
+            'heart': 'assets/cursor-heart.png',
+            'star': 'assets/cursor-star.png'
+        };
+        const curType = p.get('cur') || 'amor';
+        document.getElementById('custom-cursor').src = cursors[curType] || cursors['amor'];
+        
+        // 3. УСТАНОВКА ФОНА
+        const bgs = {
+            'romance': "url('assets/bg-romance.jpg')",
+            'science': "url('assets/bg-science.jpg')",
+            'modern': "url('assets/bg-modern.jpg')"
+        };
+        const bgParam = p.get('bg');
+        if (bgs[bgParam]) {
+            document.getElementById('main-body').style.backgroundImage = bgs[bgParam];
+        }
+
+        // 4. СЕТКА
         const board = document.getElementById('board');
         board.classList.add('grid-' + (p.get('grid') || 'hearts'));
 
-        // 3. Команды
+        // 5. КОМАНДЫ И ХОДЫ
         const t1 = { name: p.get('t1') || "Команда 1", sym: "❤️" };
         const t2 = { name: p.get('t2') || "Команда 2", sym: "✉️" };
         let cur = 1;
 
-        // 4. Пыльца
+        // 6. МАГИЧЕСКАЯ ПЫЛЬЦА
         document.addEventListener('mousemove', (e) => {
             const c = document.getElementById('custom-cursor');
             c.style.left = e.clientX + 'px'; c.style.top = e.clientY + 'px';
-            if(Math.random() > 0.7) {
+            if(Math.random() > 0.8) {
                 const part = document.createElement('div');
                 part.className = 'particle';
-                const curSrc = document.getElementById('custom-cursor').src;
-                let types = ['✨', '💖', '🌸', '⚪']; 
-                if (curSrc.includes('833472')) types = ['❤️', '💖', '💕', '✨'];
-                if (curSrc.includes('2904973')) types = ['⚡', '✨', '🔥', '🔸'];
-                part.innerText = types[Math.floor(Math.random()*types.length)];
+                part.innerText = ['✨', '💖', '🌸'][Math.floor(Math.random()*3)];
                 part.style.left = e.clientX + 'px'; part.style.top = e.clientY + 'px';
                 part.style.setProperty('--dx', (Math.random()*100 - 50) + 'px');
                 part.style.setProperty('--dy', (Math.random()*100 - 50) + 'px');
                 document.body.appendChild(part);
-                setTimeout(() => part.remove(), 1500);
+                setTimeout(() => part.remove(), 1200);
             }
         });
 
-        // 5. Логика игры
+        // 7. СОЗДАНИЕ КЛЕТОК
         const status = document.getElementById('status');
         status.innerText = "Ход: " + t1.name;
 
@@ -187,7 +159,7 @@
             const cell = document.createElement('div');
             cell.className = 'cell';
             cell.onclick = () => {
-                if(cell.innerText !== "") return;
+                if(cell.innerText !== "" || board.style.pointerEvents === 'none') return;
                 const qData = (p.get('q'+(i+1)) || "||").split('|');
                 window.currentQ = { q: qData[0], a: qData[1], img: qData[2] };
                 
@@ -195,7 +167,7 @@
                 document.getElementById('q-text').innerText = window.currentQ.q;
                 
                 const imgTag = document.getElementById('q-img');
-                if (window.currentQ.img && window.currentQ.img.trim() !== "") {
+                if (window.currentQ.img && window.currentQ.img.length > 10) {
                     imgTag.src = window.currentQ.img;
                     imgTag.style.display = 'block';
                 } else {
@@ -241,17 +213,12 @@
         }
 
         function launchCelebrate() {
-            const duration = 5 * 1000;
-            const animationEnd = Date.now() + duration;
-            const interval = setInterval(function() {
-                const timeLeft = animationEnd - Date.now();
-                if (timeLeft <= 0) return clearInterval(interval);
-                confetti({ 
-                    particleCount: 40, spread: 360, 
-                    origin: { x: Math.random(), y: Math.random() - 0.2 },
-                    colors: ['#ff4d6d', '#ffb3c1', '#ff758f']
-                });
-            }, 250);
+            const end = Date.now() + 5000;
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#ff4d6d', '#ffffff'] });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#ff4d6d', '#ffffff'] });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
         }
     </script>
 </body>
