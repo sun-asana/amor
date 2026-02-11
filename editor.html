@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Amor Engine: Professional Editor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Kelly+Slab&family=Lobster&family=Marck+Script&family=Pacifico&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #ff4d6d; --bg: #fff0f5; --accent: #ffb3c1; }
         
@@ -86,7 +87,6 @@
             border: 1px solid #ddd; padding: 15px; font-size: 12px; color: #666; resize: none;
         }
 
-        /* Стиль для маленькой кнопки копирования */
         .copy-btn {
             width: auto; padding: 8px 15px; font-size: 12px; margin: 0;
             background: var(--primary); border-radius: 10px;
@@ -100,12 +100,12 @@
         <h2>👼 Amor Engine</h2>
         
         <div class="section">
-            <span class="section-title">1. Визуал и Магия</span>
+            <span class="section-title">1. Визуал и Шрифты</span>
             <div class="flex-row">
                 <select id="grid-select">
-                    <option value="hearts">Сетка: Сердечки (SVG) ❤️</option>
-                    <option value="dots">Сетка: Точки (SVG) ⋯</option>
-                    <option value="neon">Сетка: Неон (SVG) 💡</option>
+                    <option value="hearts">Сетка: Сердечки ❤️</option>
+                    <option value="dots">Сетка: Точки ⋯</option>
+                    <option value="neon">Сетка: Неон 💡</option>
                 </select>
                 <div class="color-group">
                     <span style="font-size: 12px; color: #888;">Цвет:</span>
@@ -113,12 +113,22 @@
                 </div>
             </div>
             <div class="flex-row">
+                <select id="font-select">
+                    <option value="'Segoe UI', sans-serif">Шрифт: Стандартный</option>
+                    <option value="'Comfortaa', cursive">Шрифт: Округлый (Comfortaa)</option>
+                    <option value="'Pacifico', cursive">Шрифт: Рукописный 1 (Pacifico)</option>
+                    <option value="'Marck Script', cursive">Шрифт: Рукописный 2 (Marck)</option>
+                    <option value="'Lobster', cursive">Шрифт: Акцентный (Lobster)</option>
+                    <option value="'Kelly Slab', cursive">Шрифт: Стилизованный (Kelly)</option>
+                </select>
                 <select id="cur-select">
                     <option value="amor">Курсор: Амурчик 👼</option>
                     <option value="heart">Курсор: Сердечко ❤️</option>
                     <option value="arrow">Курсор: Стрела Амура 🏹</option>
                 </select>
-                <select id="bg-select">
+            </div>
+            <div class="flex-row">
+                <select id="bg-select" style="flex: 1;">
                     <option value="none">✨ Без фона (прозрачный)</option>
                     <option value="1">Фон 1 🌸</option>
                     <option value="2">Фон 2 🎀</option>
@@ -220,18 +230,22 @@
         const baseUrl = "index.html"; 
         let params = new URLSearchParams();
         
+        // Настройки визуала
         params.set('grid', document.getElementById('grid-select').value);
         params.set('cur', document.getElementById('cur-select').value);
         params.set('bg', document.getElementById('bg-select').value);
+        params.set('font', document.getElementById('font-select').value); // ПЕРЕДАЕМ ШРИФТ
         
         const colorValue = document.getElementById('grid-color').value.substring(1);
         params.set('gc', colorValue);
 
+        // Команды
         params.set('t1', document.getElementById('t1').value || "Команда 1");
         params.set('s1', document.getElementById('s1').value); 
         params.set('t2', document.getElementById('t2').value || "Команда 2");
         params.set('s2', document.getElementById('s2').value);
 
+        // Вопросы
         for (let i = 1; i <= 9; i++) {
             const q = document.getElementById('q'+i).value || "";
             const a = document.getElementById('a'+i).value || "";
@@ -247,7 +261,6 @@
         document.getElementById('result-box').style.display = 'block';
     }
 
-    // НОВАЯ ФУНКЦИЯ ДЛЯ КОПИРОВАНИЯ
     function copyCode() {
         const codeBox = document.getElementById('code-box');
         const btn = document.getElementById('copy-btn');
