@@ -211,9 +211,10 @@
 </div>
 
 <script>
-    const gridContainer = document.getElementById('questions-grid');
+  const gridContainer = document.getElementById('questions-grid');
     const imagesData = {};
 
+    // Создаем сетку вопросов
     for (let i = 1; i <= 9; i++) {
         gridContainer.innerHTML += `
             <div class="q-row">
@@ -247,6 +248,7 @@
         if (ev.dataTransfer.files) processFile(ev.dataTransfer.files[0], index);
     }
 
+    // ОБНОВЛЕННАЯ ФУНКЦИЯ GENERATE
     function generate() {
         const baseUrl = "index.html"; 
         let params = new URLSearchParams();
@@ -256,13 +258,15 @@
         params.set('bg', document.getElementById('bg-select').value);
         params.set('font', document.getElementById('font-select').value);
         
-        // Цвета (убираем #)
         params.set('gc', document.getElementById('grid-color').value.substring(1));
         params.set('tc', document.getElementById('text-color').value.substring(1));
 
-        params.set('t1', document.getElementById('t1').value || "Команда 1");
+        const team1 = document.getElementById('t1').value || "Команда 1";
+        const team2 = document.getElementById('t2').value || "Команда 2";
+
+        params.set('t1', team1);
         params.set('s1', document.getElementById('s1').value); 
-        params.set('t2', document.getElementById('t2').value || "Команда 2");
+        params.set('t2', team2);
         params.set('s2', document.getElementById('s2').value);
 
         for (let i = 1; i <= 9; i++) {
@@ -273,7 +277,20 @@
         }
 
         const finalUrl = baseUrl + "?" + params.toString();
-        document.getElementById('preview-frame').src = finalUrl;
+        const frame = document.getElementById('preview-frame');
+        
+        // Магия предпросмотра: принудительно рисуем текст в iframe после загрузки
+        frame.onload = function() {
+            try {
+                const statusElement = frame.contentWindow.document.getElementById('status');
+                if (statusElement) {
+                    statusElement.innerText = "Ход: " + team1;
+                    statusElement.style.opacity = "1"; // Гарантируем видимость
+                }
+            } catch(e) { console.log("Превью ограничено политикой безопасности браузера"); }
+        };
+        
+        frame.src = finalUrl;
         
         const fullUrl = window.location.href.replace('editor.html', '') + finalUrl;
         document.getElementById('code-box').value = `<iframe src="${fullUrl}" width="800" height="600" frameborder="0" allowtransparency="true" allowfullscreen></iframe>`;
