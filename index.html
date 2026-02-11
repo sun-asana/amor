@@ -116,15 +116,25 @@
         document.getElementById('custom-cursor').src = cursors[curType] || cursors['amor'];
         
         // 3. УСТАНОВКА ФОНА
-        const bgs = {
-            'romance': "url('assets/bg-romance.jpg')",
-            'science': "url('assets/bg-science.jpg')",
-            'modern': "url('assets/bg-modern.jpg')"
-        };
-        const bgParam = p.get('bg');
-        if (bgs[bgParam]) {
-            document.getElementById('main-body').style.backgroundImage = bgs[bgParam];
-        }
+const bgParam = p.get('bg') || 'none';
+const mainBody = document.getElementById('main-body');
+
+if (bgParam === 'none') {
+    // Делаем всё прозрачным
+    mainBody.style.background = 'transparent';
+    document.documentElement.style.background = 'transparent';
+} else {
+    const bgs = {
+        'romance': "url('assets/bg-romance.jpg')",
+        'science': "url('assets/bg-science.jpg')",
+        'modern': "url('assets/bg-modern.jpg')"
+    };
+    if (bgs[bgParam]) {
+        mainBody.style.backgroundImage = bgs[bgParam];
+        mainBody.style.backgroundSize = 'cover';
+        mainBody.style.backgroundPosition = 'center';
+    }
+}
 
         // 4. СЕТКА
         const board = document.getElementById('board');
