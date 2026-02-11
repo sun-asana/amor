@@ -274,15 +274,15 @@
             }());
         }
 
-        // --- САМОНАСТРОЙКА ПРИ ЗАГРУЗКЕ ---
-        window.addEventListener('load', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const team1Name = urlParams.get('t1') || "Команда 1";
-            const statusElement = document.getElementById('status');
-            if (statusElement) {
-                statusElement.innerText = "Ход: " + team1Name;
-            }
-        });
+      // --- САМОНАСТРОЙКА ПРИ ЗАГРУЗКЕ ---
+        function updateStatus() {
+            const team1Name = p.get('t1') || "Команда 1";
+            status.innerText = "Ход: " + team1Name;
+        }
+
+        // Запускаем сразу и на всякий случай через 50мс
+        updateStatus();
+        window.addEventListener('load', updateStatus);
     </script>
 </body>
 </html>
