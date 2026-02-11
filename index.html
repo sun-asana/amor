@@ -11,6 +11,8 @@
         :root {
             --primary: #ff4d6d;
             --grid-color: #ff4d6d;
+            /* Цвет текста по умолчанию, который тебе нравится */
+            --text-color: #ff4d6d; 
         }
 
         body {
@@ -20,6 +22,8 @@
             transition: background 0.5s;
             background: linear-gradient(135deg, #fff0f5, #ffdee9);
             background-size: cover;
+            /* Применяем цвет текста ко всему телу */
+            color: var(--text-color);
         }
 
         .board { 
@@ -31,7 +35,6 @@
             position: relative;
             width: 490px;
             height: 490px;
-            /* Фикс для адаптивности */
             max-width: 95vw;
             max-height: 70vh;
         }
@@ -61,6 +64,8 @@
             background: transparent;
             cursor: none;
             user-select: none;
+            /* Символы игроков тоже будут этого цвета */
+            color: var(--text-color);
         }
 
         #custom-cursor {
@@ -83,13 +88,23 @@
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: white; padding: 30px; border-radius: 30px; z-index: 100;
             box-shadow: 0 20px 50px rgba(0,0,0,0.3); text-align: center; width: 320px;
+            /* Текст в модалке тоже красим */
+            color: var(--text-color);
         }
 
         #q-img { max-width: 100%; max-height: 200px; border-radius: 15px; margin-bottom: 10px; display: none; }
         .btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; margin-top: 10px; font-weight: bold;}
-        #status { font-size: 24px; color: var(--primary); margin-bottom: 20px; font-weight: bold; z-index: 10; text-shadow: 1px 1px 5px white; }
+        
+        /* Статус (Ход: Команда) теперь слушает переменную цвета */
+        #status { 
+            font-size: 24px; 
+            color: var(--text-color); 
+            margin-bottom: 20px; 
+            font-weight: bold; 
+            z-index: 10; 
+            text-shadow: 1px 1px 5px white; 
+        }
 
-        /* --- БЛОК АДАПТИВНОСТИ ДЛЯ ПРЕДПРОСМОТРА --- */
         @media (max-width: 600px) {
             body { justify-content: center; }
             .board {
@@ -107,7 +122,7 @@
     <div id="board" class="board"></div>
 
     <div id="modal">
-        <h3 id="modal-team" style="color: var(--primary); margin-top: 0;"></h3>
+        <h3 id="modal-team" style="margin-top: 0; color: inherit;"></h3>
         <img id="q-img" src="">
         <p id="q-text" style="font-size: 18px; margin-top: 5px;"></p>
         <input type="text" id="ans-input" style="width: 80%; padding: 10px; margin-bottom: 10px; border: 2px solid #ffb3c1; border-radius: 10px; outline: none;">
@@ -125,8 +140,15 @@
             document.body.style.fontFamily = selectedFont;
         }
 
+        // ПРИМЕНЯЕМ ЦВЕТ СЕТКИ
         const gc = p.get('gc') || 'ff4d6d';
         document.documentElement.style.setProperty('--grid-color', '#' + gc);
+
+        // ПРИМЕНЯЕМ ЦВЕТ ТЕКСТА (если tc нет в URL, будет ff4d6d)
+        const tc = p.get('tc') || 'ff4d6d';
+        document.documentElement.style.setProperty('--text-color', '#' + tc);
+        // Кнопку тоже подкрасим под основной стиль
+        document.documentElement.style.setProperty('--primary', '#' + tc);
 
         const cursors = {
             'amor': 'assets/cursor-amor.png',
@@ -238,8 +260,8 @@
         function launchCelebrate() {
             const end = Date.now() + 5000;
             (function frame() {
-                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#ff4d6d', '#ffffff'] });
-                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#ff4d6d', '#ffffff'] });
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: [getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim(), '#ffffff'] });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: [getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim(), '#ffffff'] });
                 if (Date.now() < end) requestAnimationFrame(frame);
             }());
         }
