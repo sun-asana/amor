@@ -2,79 +2,142 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Amor Editor: Split View</title>
+    <title>Amor Engine: Professional Editor</title>
     <style>
-        :root { --primary: #ff4d6d; --bg: #fff0f5; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #444; }
+        :root { --primary: #ff4d6d; --bg: #fff0f5; --accent: #ffb3c1; }
         
-        /* Двухпанельный макет */
-        .main-layout { display: flex; gap: 25px; max-width: 1400px; margin: 0 auto; align-items: flex-start; }
-        
-        .editor-side { flex: 1.2; background: white; padding: 25px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .preview-side { flex: 1; position: sticky; top: 20px; }
-
-        h2 { color: var(--primary); text-align: center; margin-top: 0; }
-        .section { background: #fffafb; padding: 15px; border-radius: 20px; margin-bottom: 15px; border: 1px solid #ffecf0; }
-        .section-title { font-weight: bold; color: var(--primary); margin-bottom: 10px; display: block; }
-
-        .flex-row { display: flex; gap: 10px; flex-wrap: wrap; }
-        select, input[type="text"] { flex: 1; padding: 10px; border: 2px solid #ffdae0; border-radius: 12px; outline: none; margin-bottom: 5px; }
-        
-        .q-row { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 8px; margin-bottom: 8px; }
-        
-        .upload-zone { 
-            border: 2px dashed #ffb3c1; border-radius: 12px; padding: 5px; text-align: center; 
-            cursor: pointer; font-size: 12px; background: white; display: flex; align-items: center; justify-content: center;
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: var(--bg); margin: 0; padding: 20px; color: #444; 
         }
-        .preview-img { max-height: 30px; border-radius: 5px; margin-right: 5px; display: none; }
 
-        button { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 50px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; transition: 0.3s; }
-        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 77, 109, 0.3); }
+        .main-layout { 
+            display: flex; gap: 30px; max-width: 1500px; margin: 0 auto; 
+            align-items: flex-start; 
+        }
 
+        /* ЛЕВАЯ ПАНЕЛЬ */
+        .editor-side { 
+            flex: 1.3; background: white; padding: 30px; 
+            border-radius: 35px; box-shadow: 0 15px 40px rgba(255, 77, 109, 0.1); 
+        }
+
+        h2 { color: var(--primary); text-align: center; margin-top: 0; font-size: 28px; }
+
+        .section { 
+            background: #fffafb; padding: 20px; border-radius: 20px; 
+            margin-bottom: 20px; border: 1px solid #ffecf0; 
+        }
+
+        .section-title { 
+            font-weight: bold; color: var(--primary); margin-bottom: 15px; 
+            display: block; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        .flex-row { display: flex; gap: 12px; margin-bottom: 12px; align-items: center; }
+        
+        select, input[type="text"] { 
+            flex: 1; padding: 12px; border: 2px solid #ffdae0; 
+            border-radius: 15px; outline: none; transition: 0.3s;
+        }
+
+        select:focus, input:focus { border-color: var(--primary); }
+
+        /* ЦВЕТОВАЯ ПАЛИТРА */
+        .color-group { display: flex; align-items: center; gap: 10px; background: white; padding: 5px 15px; border-radius: 15px; border: 2px solid #ffdae0; }
+        input[type="color"] { border: none; width: 35px; height: 35px; cursor: pointer; background: none; }
+
+        /* СЕТКА ВОПРОСОВ */
+        .q-row { 
+            display: grid; grid-template-columns: 1fr 1fr 1.2fr; 
+            gap: 10px; margin-bottom: 10px; 
+        }
+
+        .upload-zone { 
+            border: 2px dashed var(--accent); border-radius: 15px; 
+            padding: 8px; text-align: center; cursor: pointer; 
+            font-size: 12px; transition: 0.3s; background: white;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        .upload-zone:hover { border-color: var(--primary); background: #fff5f7; }
+
+        .preview-img-mini { max-height: 35px; border-radius: 8px; margin-right: 8px; display: none; }
+
+        /* КНОПКА */
+        button { 
+            background: var(--primary); color: white; border: none; 
+            padding: 18px; border-radius: 50px; cursor: pointer; 
+            font-weight: bold; width: 100%; font-size: 18px; 
+            transition: 0.4s; box-shadow: 0 10px 20px rgba(255, 77, 109, 0.2);
+        }
+        button:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(255, 77, 109, 0.4); }
+
+        /* ПРАВАЯ ПАНЕЛЬ (ПРЕДПРОСМОТР) */
+        .preview-side { flex: 1; position: sticky; top: 20px; text-align: center; }
+        
         #preview-container { 
-            width: 100%; height: 600px; border: 8px solid white; border-radius: 40px; 
-            overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1); background: #eee;
+            width: 100%; height: 650px; border: 12px solid white; 
+            border-radius: 50px; overflow: hidden; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15); background: #eee;
         }
         iframe { width: 100%; height: 100%; border: none; }
-        
-        textarea { width: 100%; height: 60px; margin-top: 10px; border-radius: 10px; border: 1px solid #ddd; padding: 10px; font-size: 11px; resize: none; }
+
+        textarea { 
+            width: 100%; height: 100px; margin-top: 15px; border-radius: 15px; 
+            border: 1px solid #ddd; padding: 15px; font-size: 12px; color: #666; resize: none;
+        }
     </style>
 </head>
 <body>
 
 <div class="main-layout">
     <div class="editor-side">
-        <h2>💖 Amor Editor</h2>
+        <h2>👼 Amor Engine</h2>
         
         <div class="section">
-            <span class="section-title">1. Стиль и Команды</span>
+            <span class="section-title">1. Визуал и Магия</span>
             <div class="flex-row">
                 <select id="grid-select">
-                    <option value="hearts">Линии из сердечек ❤️</option>
-                    <option value="dots">Пунктирная сетка ⋯</option>
-                    <option value="neon">Неоновые линии 💡</option>
+                    <option value="hearts">Сетка: Сердечки (SVG) ❤️</option>
+                    <option value="dots">Сетка: Точки (SVG) ⋯</option>
+                    <option value="neon">Сетка: Неон (SVG) 💡</option>
+                </select>
+                <div class="color-group">
+                    <span style="font-size: 12px; color: #888;">Цвет:</span>
+                    <input type="color" id="grid-color" value="#ff4d6d">
+                </div>
+            </div>
+            <div class="flex-row">
+                <select id="cur-select">
+                    <option value="amor">Курсор: Амурчик 🏹</option>
+                    <option value="heart">Курсор: Сердце ❤️</option>
+                    <option value="star">Курсор: Звезда ⭐</option>
                 </select>
                 <select id="bg-select">
-                    <option value="romance">Розовый градиент</option>
-                    <option value="science">Светлый радиальный</option>
-                    <option value="modern">Яркий розовый</option>
+                    <option value="romance">Фон: Романтика 🌸</option>
+                    <option value="science">Фон: Наука 🧪</option>
+                    <option value="modern">Фон: Модерн ✨</option>
                 </select>
-            </div>
-            <div class="flex-row" style="margin-top: 10px;">
-                <input type="text" id="t1" placeholder="Команда 1 (❤️)">
-                <input type="text" id="t2" placeholder="Команда 2 (✉️)">
             </div>
         </div>
 
         <div class="section">
-            <span class="section-title">2. Вопросы (перетащи картинку в поле)</span>
+            <span class="section-title">2. Команды</span>
+            <div class="flex-row">
+                <input type="text" id="t1" placeholder="Имя команды 1 (напр. Девочки)">
+                <input type="text" id="t2" placeholder="Имя команды 2 (напр. Мальчики)">
+            </div>
+        </div>
+
+        <div class="section">
+            <span class="section-title">3. Вопросы и Ответы</span>
             <div id="questions-grid"></div>
         </div>
         
-        <button onclick="generate()">ОБНОВИТЬ ПРЕДПРОСМОТР ✨</button>
+        <button onclick="generate()">ОБНОВИТЬ ИГРУ ✨</button>
         
-        <div id="result-box" style="display:none; margin-top:15px;">
-            <span style="font-size: 12px; color: #888;">Код для Genially (Insert -> Others):</span>
+        <div id="result-box" style="display:none; margin-top:20px;">
+            <span style="font-size: 12px; color: #888; font-weight: bold;">Код для вставки в Genially:</span>
             <textarea id="code-box" readonly></textarea>
         </div>
     </div>
@@ -83,8 +146,8 @@
         <div id="preview-container">
             <iframe id="preview-frame" src="about:blank"></iframe>
         </div>
-        <p style="text-align: center; color: var(--primary); font-size: 14px; font-weight: bold;">
-            👀 Ваша игра будет выглядеть так
+        <p style="color: var(--primary); font-weight: bold; margin-top: 15px;">
+            ✨ Так игра выглядит прямо сейчас
         </p>
     </div>
 </div>
@@ -93,6 +156,7 @@
     const gridContainer = document.getElementById('questions-grid');
     const imagesData = {};
 
+    // Генерируем 9 строк для вопросов
     for (let i = 1; i <= 9; i++) {
         gridContainer.innerHTML += `
             <div class="q-row">
@@ -100,13 +164,14 @@
                 <input type="text" id="a${i}" placeholder="Ответ">
                 <div class="upload-zone" onclick="document.getElementById('file${i}').click()" 
                      id="zone${i}" ondrop="dropHandler(event, ${i})" ondragover="return false">
-                    <img id="prev${i}" class="preview-img">
+                    <img id="prev${i}" class="preview-img-mini">
                     <span id="text${i}">🖼️ Фото</span>
                     <input type="file" id="file${i}" hidden onchange="fileHandler(this, ${i})" accept="image/*">
                 </div>
             </div>`;
     }
 
+    // Обработка загрузки картинок
     function processFile(file, index) {
         if (!file) return;
         const reader = new FileReader();
@@ -114,7 +179,7 @@
             imagesData[index] = e.target.result;
             const prev = document.getElementById('prev'+index);
             prev.src = e.target.result; prev.style.display = 'block';
-            document.getElementById('text'+index).innerText = "✅";
+            document.getElementById('text'+index).style.display = 'none';
             document.getElementById('zone'+index).style.borderColor = "#4CAF50";
         };
         reader.readAsDataURL(file);
@@ -126,15 +191,22 @@
         if (ev.dataTransfer.files) processFile(ev.dataTransfer.files[0], index);
     }
 
+    // ГЕНЕРАЦИЯ ССЫЛКИ
     function generate() {
-        const baseUrl = "https://sun-asana.github.io/amor/index.html"; 
+        const baseUrl = "index.html"; 
         let params = new URLSearchParams();
         
         params.set('grid', document.getElementById('grid-select').value);
+        params.set('cur', document.getElementById('cur-select').value);
         params.set('bg', document.getElementById('bg-select').value);
         params.set('t1', document.getElementById('t1').value || "Команда 1");
         params.set('t2', document.getElementById('t2').value || "Команда 2");
+        
+        // Цвет без решетки
+        const colorValue = document.getElementById('grid-color').value.substring(1);
+        params.set('gc', colorValue);
 
+        // Собираем вопросы
         for (let i = 1; i <= 9; i++) {
             const q = document.getElementById('q'+i).value || "";
             const a = document.getElementById('a'+i).value || "";
@@ -143,8 +215,13 @@
         }
 
         const finalUrl = baseUrl + "?" + params.toString();
+        
+        // Обновляем фрейм
         document.getElementById('preview-frame').src = finalUrl;
-        document.getElementById('code-box').value = `<iframe src="${finalUrl}" width="800" height="600" frameborder="0" allowfullscreen></iframe>`;
+        
+        // Генерируем код для вставки
+        const fullUrl = window.location.href.replace('editor.html', '') + finalUrl;
+        document.getElementById('code-box').value = `<iframe src="${fullUrl}" width="800" height="600" frameborder="0" allowfullscreen></iframe>`;
         document.getElementById('result-box').style.display = 'block';
     }
 </script>
