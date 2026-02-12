@@ -24,16 +24,17 @@
             color: var(--text-color);
         }
 
-        .board { 
-            display: grid; 
-            grid-template-columns: repeat(3, 150px); 
-            grid-template-rows: repeat(3, 150px); 
-            gap: 20px; 
-            z-index: 10; 
-            position: relative;
-            width: 490px;
-            height: 490px;
-        }
+.board { 
+    display: grid; 
+    grid-template-columns: repeat(3, 150px); 
+    grid-template-rows: repeat(3, 150px); 
+    gap: 20px; 
+    z-index: 10; 
+    position: relative;
+    width: 490px;
+    height: 490px;
+    margin-top: 60px; /* Добавляем этот отступ, чтобы опустить сетку ниже */
+}
 
         .board::before {
             content: "";
@@ -90,19 +91,19 @@
         .btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; margin-top: 10px; font-weight: bold;}
         
 #status { 
-        position: fixed; /* Фиксируем сверху */
-        top: 20px;
-        left: 0;
-        width: 100%;
-        font-size: 32px; 
-        color: var(--text-color); 
-        font-weight: bold; 
-        z-index: 10000; /* Выше всего */
-        text-shadow: 2px 2px 5px white; 
-        text-align: center;
-        background: transparent;
-        pointer-events: none; /* Чтобы не мешал кликать по доске */
-    }
+    position: fixed;
+    top: 40px; /* Было 20px, увеличили, чтобы не обрезалось */
+    left: 0;
+    width: 100%;
+    font-size: 32px; 
+    color: var(--text-color); 
+    font-weight: bold; 
+    z-index: 10000; 
+    text-shadow: 2px 2px 5px white; 
+    text-align: center;
+    background: transparent;
+    pointer-events: none;
+}
 
         @media (max-width: 600px) {
             .board { transform: scale(0.6); transform-origin: center center; }
